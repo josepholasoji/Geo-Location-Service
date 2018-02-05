@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Geo-Location-Service", "GeoLocationService\GeoLocationService.vcxproj", "{5519BD01-12DB-46C2-8207-D94BEEA9FC09}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tk103", "tk103\tk103.vcxproj", "{F590249F-7523-4C6B-894E-CE3FC0DD41CE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc", "geo_location\geo_location.vcxproj", "{473649D2-4578-4712-8AC6-669332E19085}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +15,22 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Debug|x64.ActiveCfg = Debug|x64
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Debug|x64.Build.0 = Debug|x64
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Debug|x86.ActiveCfg = Debug|Win32
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Debug|x86.Build.0 = Debug|Win32
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Release|x64.ActiveCfg = Release|x64
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Release|x64.Build.0 = Release|x64
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Release|x86.ActiveCfg = Release|Win32
-		{5519BD01-12DB-46C2-8207-D94BEEA9FC09}.Release|x86.Build.0 = Release|Win32
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x64.ActiveCfg = Debug|x64
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x64.Build.0 = Debug|x64
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x86.ActiveCfg = Debug|Win32
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x86.Build.0 = Debug|Win32
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x64.ActiveCfg = Release|x64
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x64.Build.0 = Release|x64
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x86.ActiveCfg = Release|Win32
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x86.Build.0 = Release|Win32
+		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x64.ActiveCfg = Debug|x64
+		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x64.Build.0 = Debug|x64
+		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x86.ActiveCfg = Debug|Win32
+		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x86.Build.0 = Debug|Win32
+		{473649D2-4578-4712-8AC6-669332E19085}.Release|x64.ActiveCfg = Release|x64
+		{473649D2-4578-4712-8AC6-669332E19085}.Release|x64.Build.0 = Release|x64
+		{473649D2-4578-4712-8AC6-669332E19085}.Release|x86.ActiveCfg = Release|Win32
+		{473649D2-4578-4712-8AC6-669332E19085}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,3 +20,52 @@ Ctk103::Ctk103()
 {
     return;
 }
+
+gps * Ctk103::detect(unsigned char*, int len)
+{
+	read();
+	process();
+	write();
+}
+
+void Ctk103::start()
+{
+	started = true;
+	while (started)
+	{
+		read();
+		process();
+		write();
+	}
+
+	//finalize process stopping here...
+}
+
+void Ctk103::stop()
+{
+	started = false;
+}
+
+std::string Ctk103::status()
+{
+	switch (istatus)
+	{
+	default:
+		return "Unknown status";
+	}
+}
+
+int Ctk103::read()
+{
+	return 0;
+}
+
+int Ctk103::write()
+{
+	return 0;
+}
+
+int Ctk103::process()
+{
+	return 0;
+}
