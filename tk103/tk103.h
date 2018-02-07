@@ -41,8 +41,8 @@ public:
 
 	//
 	int read();
-	int write(data_structure*);
-	int process(data_structure*);
+	int write();
+	int process();
 };
 
 extern TK103_API int ntk103;
