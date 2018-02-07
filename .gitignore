@@ -1,2 +1,5 @@
 *.db
+*.pch
+*.ipch
+*.cd
 *.opendb
