@@ -3,3 +3,10 @@
 *.ipch
 *.cd
 *.opendb
+*.obj
+*.tlog
+*.pdb
+*.ilk
+*.dll
+*.lib
+*.log

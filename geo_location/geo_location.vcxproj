@@ -148,11 +148,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="geo_location_svc.cpp" />
-    <ClCompile Include="gps.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geo_location_svc.h" />
-    <ClInclude Include="gps.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
