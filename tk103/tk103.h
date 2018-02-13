@@ -31,14 +31,92 @@ struct _command_message
 	_command_message_enum type;
 };
 
-struct _command_message_enum
+enum _command_message_enum
 {
+	AP00,
+	AP01,
+	AP03,
+	AP04,
+	AP05,
+	AP07,
+	AP11,
+	AP12,
+	AP15,
+	AP17,
+
+
+	AQ00,
+	AQ01,
+	AQ02,
+	AQ03,
+	AQ04,
+
+
+	AR00,
+	AR01,
+	AR05,
+	AR06,
+
+
+	AS01,
+	AS07,
+
+
+	AT00,
+
+
+
+	AV00,
+	AV01,
+	AV02,
+	AV03,
+
+
+	AX00,
+	AX01,
+	AX02,
+	AX03,
+	AX04,
+	AX05,
+	
+	BO01,
+	BP00,
+	BP02,
+	BP03,
+	BP04,
+	BP05,
+	BP12,
+	BP07,
+
+
+	BR00,
+	BR01,
+	BR02,
+	BR05,
+	BR06,
+
+
+	BS04,
+	BS05,
+	BS06,
+	BS08,
+	BS09,
+	BS20,
+	BS21,
+	BS23,
+
+
+	BT00,
+	BU00,
+	BV00,
+	BV01,
+	BV02
 };
 
 // This class is exported from the tk103.dll
 class TK103_API Ctk103: gps {
 
-	std::vector<struct _command_message > device_command_message;
+	std::map<std::string,struct _command_message > device_command_message;
 
 public:
 	int istatus;
