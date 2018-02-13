@@ -23,9 +23,23 @@
 #define MESSAGE_LENGTH 1024
 #define TRAIL_LENGTH 1
 
+struct _command_message
+{
+	const char *message_type_subtype_number;
+	const char *message_description;
+	const char *remark;
+	_command_message_enum type;
+};
+
+struct _command_message_enum
+{
+};
 
 // This class is exported from the tk103.dll
 class TK103_API Ctk103: gps {
+
+	std::vector<struct _command_message > device_command_message;
+
 public:
 	int istatus;
 	bool started = false;

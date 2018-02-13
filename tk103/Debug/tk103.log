@@ -1,1 +1,113 @@
-﻿
+﻿  stdafx.cpp
+  tk103.cpp
+c:\super\programming\applications\geo-location-service\sdk\gps.h(11): error C2059: syntax error: '<<'
+c:\super\programming\applications\geo-location-service\sdk\gps.h(11): error C2334: unexpected token(s) preceding ':'; skipping apparent function body
+c:\super\programming\applications\geo-location-service\tk103\data_structure.h(12): error C2040: 'gps::data_structure::serial_number': 'gps::gps_message_body' differs in levels of indirection from 'unsigned char *'
+c:\boost_1_65_1\boost\config\detail\suffix.hpp(484): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\config\detail\suffix.hpp(484): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\handler_type.hpp(22): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\handler_type.hpp(22): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\async_result.hpp(23): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\async_result.hpp(23): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\noncopyable.hpp(22): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\noncopyable.hpp(22): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xmemory(14): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xmemory(14): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\memory(17): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\memory(17): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\memory(1588): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\memory(1588): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\addressof.hpp(26): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\addressof.hpp(26): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\handler_alloc_hook.hpp(23): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\handler_alloc_hook.hpp(23): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(101): error C2059: syntax error: 'string'
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(101): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\shared\ws2ipdef.h(42): error C2059: syntax error: 'string'
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\shared\ws2ipdef.h(42): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(91): error C3646: 'ADDRINFOT': unknown override specifier
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(91): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(98): error C3646: 'ADDRINFO': unknown override specifier
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(98): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(103): error C3646: 'ADDRINFOEX': unknown override specifier
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(103): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(115): error C2059: syntax error: 'string'
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\ws2tcpip.h(115): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\mswsock.h(35): error C2059: syntax error: 'string'
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\mswsock.h(35): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\socket_types.hpp(95): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\socket_types.hpp(95): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\win_tss_ptr.hpp(27): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\win_tss_ptr.hpp(27): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\cstdint.hpp(103): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\cstdint.hpp(104): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\cstdint.hpp(379): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\cstdint.hpp(379): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\assert.h(14): error C2059: syntax error: 'string'
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\assert.h(14): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\core\noncopyable.hpp(14): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\core\noncopyable.hpp(14): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\core\enable_if.hpp(24): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\core\enable_if.hpp(25): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xfunctional(16): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xfunctional(16): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\tuple(16): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\tuple(16): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\tuple(1160): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\tuple(1160): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\tuple(1172): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\tuple(1172): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\functional(17): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\functional(17): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\functional(935): error C2059: syntax error: 'namespace'
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\functional(935): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\system\error_code.hpp(41): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\system\error_code.hpp(42): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\throw_error.hpp(23): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\throw_error.hpp(23): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\exception\exception.hpp(19): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\exception\exception.hpp(19): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\exception\exception.hpp(20): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\exception\exception.hpp(20): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\exception\exception.hpp(23): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\exception\exception.hpp(25): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\current_function.hpp(22): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\current_function.hpp(23): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\throw_exception.hpp(52): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\throw_exception.hpp(53): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\throw_exception.hpp(24): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\throw_exception.hpp(24): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\assert.h(14): error C2059: syntax error: 'string'
+c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\assert.h(14): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\system\system_error.hpp(16): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\system\system_error.hpp(17): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\impl\throw_error.ipp(25): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\impl\throw_error.ipp(25): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\error.hpp(64): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\error.hpp(64): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\error.hpp(275): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\error.hpp(275): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\error.hpp(301): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\error.hpp(301): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\impl\error.ipp(24): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\impl\error.ipp(24): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\impl\win_tss_ptr.ipp(28): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\impl\win_tss_ptr.ipp(28): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\tss_ptr.hpp(34): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\tss_ptr.hpp(34): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\call_stack.hpp(24): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\call_stack.hpp(24): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\thread_info_base.hpp(24): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\thread_info_base.hpp(24): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\win_iocp_thread_info.hpp(22): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\win_iocp_thread_info.hpp(22): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\impl\handler_alloc_hook.ipp(32): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\impl\handler_alloc_hook.ipp(32): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+c:\boost_1_65_1\boost\asio\detail\handler_alloc_helpers.hpp(28): error C2059: syntax error: 'namespace'
+c:\boost_1_65_1\boost\asio\detail\handler_alloc_helpers.hpp(28): fatal error C1003: error count exceeds 100; stopping compilation
+  gps_message_body.cpp
+  data_structure.cpp
+c:\super\programming\applications\geo-location-service\tk103\data_structure.h(12): error C2040: 'data_structure::serial_number': 'gps_message_body' differs in levels of indirection from 'unsigned char *'
+c:\super\programming\applications\geo-location-service\tk103\data_structure.cpp(6): error C2600: 'data_structure::data_structure': cannot define a compiler-generated special member function (must be declared in the class first)
+c:\super\programming\applications\geo-location-service\tk103\data_structure.cpp(11): error C2600: 'data_structure::~data_structure': cannot define a compiler-generated special member function (must be declared in the class first)
+  Generating Code...
