@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "tk103.h"
+#include "..\sdk\data_upstream.h"
+#include "..\sdk\data_downstream.h"
 
 
 // This is an example of an exported variable
@@ -85,9 +87,11 @@ Ctk103::Ctk103()
 
 gps * Ctk103::detect(unsigned char*, int len)
 {
-	read();
-	process();
-	write();
+	//read();
+	//process();
+	//write();
+
+	return nullptr;
 }
 
 void Ctk103::start()
@@ -95,9 +99,9 @@ void Ctk103::start()
 	started = true;
 	while (started)
 	{
-		read();
-		process();
-		write();
+		//read();
+		//process();
+		//write();
 	}
 
 	//finalize process stopping here...
@@ -108,26 +112,44 @@ void Ctk103::stop()
 	started = false;
 }
 
-std::string Ctk103::status()
+void Ctk103::status()
 {
 	switch (istatus)
 	{
-	default:
-		return "Unknown status";
+	//default:
+		//return "Unknown status";
 	}
 }
 
-int Ctk103::read()
+void Ctk103::config()
+{
+}
+
+int Ctk103::read(unsigned char* ch)
 {
 	return 0;
 }
 
-int Ctk103::write()
+int Ctk103::write(unsigned char* ch)
 {
 	return 0;
 }
 
-int Ctk103::process()
+int Ctk103::process(unsigned char* ch, int ch_len, struct data_upstream *du)
 {
+	int pointer = 0;
+
+	pointer += HEAD_LENGTH;
+	du->message_no_or_time = (ch + pointer);
+	du->message_no_or_time_len = SERIAL_NUMBER_TIME_LENGTH;
+
+	pointer += SERIAL_NUMBER_TIME_LENGTH;
+	du->control_data = (ch + pointer);
+	du->control_data_len = COMMAND_LENGTH;
+
+	pointer += COMMAND_LENGTH;
+	du->payload = (ch + pointer);
+	du->payload_len = ch_len - pointer - TRAIL_LENGTH;
+
 	return 0;
 }

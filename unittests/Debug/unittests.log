@@ -1,7 +1,7 @@
 ﻿  unittests.cpp
+c:\super\programming\applications\geo-location-service\tk103\data_structure.h(12): error C2040: 'data_structure::serial_number': 'gps_message_body' differs in levels of indirection from 'unsigned char *'
+c:\super\programming\applications\geo-location-service\tk103\tk103.h(16): fatal error C1083: Cannot open include file: 'boost\asio.hpp': No such file or directory
   Generating Code...
   Compiling...
   modelutil.cpp
   Generating Code...
-  unittests.vcxproj -> C:\SUPER\Programming\Applications\Geo-Location-Service\Debug\unittests.dll
-  unittests.vcxproj -> C:\SUPER\Programming\Applications\Geo-Location-Service\Debug\unittests.pdb (Partial PDB)

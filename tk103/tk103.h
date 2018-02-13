@@ -13,7 +13,7 @@
 #include <string>
 #include "../sdk/gps.h"
 #include "data_structure.h"
-#include <boost\asio.hpp>
+#include <boost/asio.hpp>
 
 
 //defintions
@@ -28,7 +28,7 @@ struct _command_message
 	const char *message_type_subtype_number;
 	const char *message_description;
 	const char *remark;
-	_command_message_enum type;
+	enum _command_message_enum type;
 };
 
 enum _command_message_enum
@@ -129,12 +129,13 @@ public:
 	// After detecting the gps device, this method starts a service thread to service the gps communications.
 	void start();
 	void stop();
-	std::string status();
+	void status();
+	void config();
 
 	//
-	int read();
-	int write();
-	int process();
+	int read(unsigned char* ch);
+	int write(unsigned char* ch);
+	int process(unsigned char* ch, int ch_len, struct data_upstream *du);
 };
 
 extern TK103_API int ntk103;

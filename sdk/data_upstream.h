@@ -1,12 +1,12 @@
 struct data_upstream
 {
-	unsigned word version;
-	char* device_id;
-	unsigned int device_id_len;
-	char* device_version;
+	unsigned short version;
+	unsigned char* message_no_or_time;
+	unsigned int message_no_or_time_len;
+	unsigned char* device_version;
 	unsigned int device_version_len;
-	char* payload;
+	unsigned char* payload;
 	unsigned int payload_len;
-	char* control_data;
+	unsigned char* control_data;
 	unsigned int control_data_len;
 };

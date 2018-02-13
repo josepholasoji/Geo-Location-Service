@@ -1,6 +1,6 @@
 struct data_downstream
 {
-	unsigned word version;
+	unsigned short version;
 	char* device_id;
 	unsigned int device_id_len;
 	char* device_version;
