@@ -6,7 +6,7 @@
 #include <iostream>
 #include "..\tk103\tk103.h"
 
-
+#pragma comment(lib, "tk103.lib")
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace unittests
@@ -30,10 +30,12 @@ namespace unittests
 
 		TEST_METHOD(testTK103DataProcessor)
 		{
-			Ctk103* tk103 = new Ctk103();
+			Ctk103 tk103;
 			data_upstream du;
-			tk103->process(((unsigned char*)tk103_hex_gps_data), strlen(tk103_hex_gps_data), &du);
+			tk103.process(((unsigned char*)tk103_ascii_gps_data), strlen(tk103_hex_gps_data), &du);
 			std::cout << du.control_data;
+			std::cout << du.message_no_or_time;
+			std::cout << du.payload;
 			// TODO: Your test code here
 		}
 	};
