@@ -1,13 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tk103", "tk103\tk103.vcxproj", "{F590249F-7523-4C6B-894E-CE3FC0DD41CE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc", "geo_location\geo_location.vcxproj", "{473649D2-4578-4712-8AC6-669332E19085}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcxproj", "{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-8178-499D-A646-679459EC8201}"
+	ProjectSection(SolutionItems) = preProject
+		sdk\data_downstream.h = sdk\data_downstream.h
+		sdk\data_upstream.h = sdk\data_upstream.h
+		sdk\gps.h = sdk\gps.h
+		utils.cpp = utils.cpp
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcxproj", "{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE} = {F590249F-7523-4C6B-894E-CE3FC0DD41CE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +44,14 @@ Global
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x64.Build.0 = Release|x64
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x86.ActiveCfg = Release|Win32
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x86.Build.0 = Release|Win32
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Debug|x64.ActiveCfg = Debug|x64
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Debug|x64.Build.0 = Debug|x64
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Debug|x86.ActiveCfg = Debug|Win32
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Debug|x86.Build.0 = Debug|Win32
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Release|x64.ActiveCfg = Release|x64
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Release|x64.Build.0 = Release|x64
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Release|x86.ActiveCfg = Release|Win32
-		{C0D876E8-6B2C-405D-BBB2-BC8B807AE4B7}.Release|x86.Build.0 = Release|Win32
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x64.ActiveCfg = Debug|x64
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x64.Build.0 = Debug|x64
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x86.ActiveCfg = Debug|Win32
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x86.Build.0 = Debug|Win32
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x64.ActiveCfg = Release|x64
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x64.Build.0 = Release|x64
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x86.ActiveCfg = Release|Win32
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

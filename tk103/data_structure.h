@@ -9,6 +9,5 @@ struct data_structure
 	unsigned char* time;
 	unsigned char* time_len;
 	__int32 command;
-	gps_message_body serial_number;
 };
 
