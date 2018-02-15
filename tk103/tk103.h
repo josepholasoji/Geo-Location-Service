@@ -1,4 +1,4 @@
-#ifndef TK103_EXPORTS
+﻿#ifndef TK103_EXPORTS
 	#define TK103_EXPORTS
 #endif // !TK103_EXPORTS
 
@@ -29,11 +29,32 @@
 #define TRAIL_LENGTH 1
 
 //FROM SERVER TO DEVICE
-//FROM SERVER TO DEVICE
 #define WRITE_HANDSHAKE_SIGNAL_RESPONSE (id) "(" + id + "AP01HSO)"
 #define WRITE_HANDSHAKE_DEVICE_LOGIN_RESPONSE (id) "(" + id + "AP05)"
-#define WRITE_ISOCHRONIC_CONTINUES_FEEDBACK_CONFIGURATION (id) "(" + id + "AR0000140024)"
+
+// XXXX：Interval for each message of continues feedback. hex。Unit：
+// Second, 4 characters in all, H_STRING. The max is 0xFFFF
+// seconds 。 When XXXX＝0,the device stops continues feedback. YYZZ：The total time for feedback, 16 advance system. Unit：YY：
+// Hour 、 ZZ：Minute. 4 characters in all，H_STRING，The max is 0xFFFF，ie:255 hours 255 minutes. When YYZZ＝0, according to
+// the time intervals, continues feedback.
+// When both XXXX and YYZZ are not 0，it figure that feedback according to the time intervals, when it up to the total time, it
+// automaticly stop to feedback
+
+// This message is available to ecolomic device and navigation device. In the mode of SMS to continues feedback, if set time interval is less than the Min time interval (Set by the device manufacturer),it will continues feedback according to the Min time interval, otherwise continues feedback according to the set time. The data mode is the
+// same as the SMS mode.
+#define WRITE_ISOCHRONIC_CONTINUES_FEEDBACK_CONFIGURATION (id, xxxx, yy, zz) "(" + id + "AR00"+ xxxx + yy + zz + ")"
+
+// X：The type of alarm for BO01X up alarm message.1character, 16 advance system, ASCII character
+// 0：Cut off vehicle oil	
+// 1： Happen accident	
+// 2：Vehicle rob (SOS help)
+// 3：Vehicle anti-theft alarm	
+// 4：Vehicle low speed alarm 
+// 5：Vehicle over speed alarm		
+// 6. Alarm out of Geo-fence
 #define WRITE_ANSWER_ALARM_MESSAGE (id) "(" + id + "AS012)"
+
+
 #define WRITE_ONE_TIME_ENQUIRY_MESSAGE (id) "(" + id + "AP00)"
 #define WRITE_SETTING_VEHICLE_HIGH_AND_LOW_LIMIT_SPEED (id) "(" + id + "AP12H050L030)"
 #define WRITE_OIL_CONTROL_SINGLE (id) "(" + id + "AV010)"
@@ -59,7 +80,6 @@
 #define READ_ANSWER_THE_SETTING_ACC_CLOSE_SENDING_DATA_INTERVALS () "(%4s)"
 #define READ_ANSWER_THE_SETTING_GEOFENCE_MESSAGE () "(%4s[0/1])"
 #define READ_ANSWER_THE_SETTING_ACC_CLOSE_SENDING_DATA_INTERVALS () "(%4s)"
-
 
 
 
