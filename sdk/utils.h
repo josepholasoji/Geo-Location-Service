@@ -1,5 +1,6 @@
 ﻿
 #include <string>
+#include <tuple>
 
 using namespace std;
 class utils
@@ -9,7 +10,8 @@ public:
 	~utils();
 
 	static unsigned char hexval(unsigned char c);
-	static void utils::hex2ascii(const string& in, string& out);
+	static void hex2ascii(const string& in, string& out);
+	static tuple<unsigned char*, int> strip_start_and_end_tags(const char* ch);
 private:
 
 };
@@ -44,3 +46,10 @@ void utils::hex2ascii(const string& in, string& out)
 	}
 }
 
+tuple<unsigned char*, int> utils::strip_start_and_end_tags(const char* ch)
+{
+	unsigned char *_ch = (unsigned char*)ch;
+	_ch++;
+	int len = strlen(ch) - 1;
+	return { _ch, len };
+}
