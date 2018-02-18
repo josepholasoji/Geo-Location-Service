@@ -42,3 +42,10 @@ static void utils::hex2ascii(const string& in, string& out)
 	}
 }
 
+static <char, int> utils::strip_start_and_end_tags(const char* ch)
+{
+	char *_ch = ch++;
+	int len = strlen(ch) - 1;
+	return <_ch, len(ch)>;
+}
+

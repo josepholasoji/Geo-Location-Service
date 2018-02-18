@@ -10,7 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-8178-499D-A646-679459EC8201}"
 	ProjectSection(SolutionItems) = preProject
 		sdk\data_downstream.h = sdk\data_downstream.h
-		sdk\data_upstream.h = sdk\data_upstream.h
+		sdk\data_payload_from_device.h = sdk\data_payload_from_device.h
 		sdk\gps.h = sdk\gps.h
 		utils.cpp = utils.cpp
 	EndProjectSection

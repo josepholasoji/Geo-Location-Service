@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "..\sdk\utils.h"
-#include "..\sdk\data_upstream.h"
+#include "..\sdk\data_payload_from_device.h"
 #include "modelutil.h"
 #include <iostream>
 #include "..\tk103\tk103.h"
@@ -31,12 +31,18 @@ namespace unittests
 		TEST_METHOD(testTK103DataProcessor)
 		{
 			Ctk103 tk103;
-			data_upstream du;
-			tk103.process(((unsigned char*)tk103_ascii_gps_data), strlen(tk103_hex_gps_data), &du);
-			std::cout << du.control_data;
-			std::cout << du.message_no_or_time;
-			std::cout << du.payload;
-			// TODO: Your test code here
+			data_payload_from_device* _data_payload_from_device = {0};
+			auto _tuple = utils::strip_start_and_end_tags(tk103_ascii_gps_data);
+			
+			_data_payload_from_device = tk103.process(std::get<0>(_tuple));
+			Assert::IsNotNull(_data_payload_from_device);
+
+			std::string command_string = std::string(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command, sizeof(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command));
+			auto message_entry = tk103.device_command_message.find(command_string);
+			Assert::IsFalse(message_entry == tk103.device_command_message.end());
+
+			struct _command_message message = message_entry->second;
+			Assert::IsNotNull(message.message_description);
 		}
 	};
 }

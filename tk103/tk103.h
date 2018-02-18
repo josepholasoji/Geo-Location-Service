@@ -17,6 +17,7 @@
 
 #include <string>
 #include "../sdk/gps.h"
+#include "../sdk/data_payload_from_device.h"
 #include "data_structure.h"
 #include <boost/asio.hpp>
 
@@ -58,7 +59,7 @@
 //figures the sending message time is 2008 - 8 - 30 - 14 :18 : 30.Setting the up limit speed is50km / h, low limit is 30km / h.When up limit is 000, 
 //it figures cancel alarm up limit, and When down limit is 000, it figures cancel alarm down limit.Less 3
 //digits of the speed, full 0 on left.Alarm refer to 3.2.4
-#define WRITE_SETTING_VEHICLE_HIGH_AND_LOW_LIMIT_SPEED (id, HHH, LLL) "(" + id + "AP12" + "H" + HHH + "L" + LLL)"
+#define WRITE_SETTING_VEHICLE_HIGH_AND_LOW_LIMIT_SPEED (id, HHH, LLL) "(" + id + "AP12" + "H" + HHH + "L" + LLL + ")"
 
 //“1”or“0”,“1”figures opening oil，“0”figures closing oil。
 #define WRITE_OIL_CONTROL_SINGLE (id, x) "(" + id + "AV01" + x + ")"
@@ -250,12 +251,12 @@ enum _command_message_enum
 
 // This class is exported from the tk103.dll
 class TK103_API Ctk103: gps {
-
-	std::map<std::string,struct _command_message > device_command_message;
-
 public:
 	int istatus;
 	bool started = false;
+	std::map<std::string, struct _command_message > device_command_message;
+
+
 	Ctk103(void);
 	// TODO: add your methods here.
 	// A method to process incoming data from the modem to start communication. 
@@ -268,9 +269,9 @@ public:
 	void config();
 
 	//
-	int read(unsigned char* ch);
+	unsigned char* read();
 	int write(unsigned char* ch);
-	int process(unsigned char* ch, int ch_len, struct data_upstream *du);
+	data_payload_from_device * process(unsigned char* ch);
 };
 
 extern TK103_API int ntk103;
