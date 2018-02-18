@@ -13,3 +13,11 @@
 ipch/*
 ipch
 *.VC.db
+*.idb
+Debug/**
+Release/**
+ipch/**
+geo_location/Debug/**
+geo_location/Release/**
+tk103/Debug/**
+tk103/Release/**
