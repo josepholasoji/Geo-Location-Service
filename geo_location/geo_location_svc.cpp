@@ -28,3 +28,5 @@ int geo_location_svc::status()
 {
 	return 0;
 }
+
+

@@ -1,4 +1,10 @@
 #pragma once
+
+//The base requiement is are as follows:
+//1. ZeroMQ
+#include <zmq.h>
+#include <zmq_utils.h>
+
 class gps
 {
 public:
