@@ -10,6 +10,7 @@
 *.dll
 *.lib
 *.log
+*.exe
 ipch/*
 ipch
 *.VC.db

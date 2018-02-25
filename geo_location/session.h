@@ -6,7 +6,9 @@
 #include <boost/asio.hpp>
 #include <zmq.h>
 #include <zmq_utils.h>
+#include <thread>
 #include "../sdk/gps.h"
+#include "../sdk/data_downstream.h"
 
 using boost::asio::ip::tcp;
 
@@ -18,11 +20,13 @@ public:
 		: socket_(std::move(socket)),
 		zmq_pub_obj(zmq_pub_obj)
 	{
+		memset(this->buff, 0, max_length);
 	}
 
 	void start()
 	{
 		do_read();
+		setup_writeprocess();
 	}
 
 private:
@@ -30,71 +34,80 @@ private:
 	{
 		auto self(shared_from_this());
 		socket_.async_read_some(boost::asio::buffer(data_, max_length),
-			[this, self](boost::system::error_code ec, std::size_t length)
+		[this, self](boost::system::error_code ec, std::size_t length)
 		{
 			if (!ec)
 			{
-				//save the remaining parameter for later...				
-				unsigned char* c_buf = nullptr;
-				if (this->left_over_bytes != nullptr)
-				{
-					 c_buf = boost::asio::buffer_cast<unsigned char*>(*this->left_over_bytes);
-				}
+				int remaining_bytes_size = strlen(this->buff),
+				    total_new_length = remaining_bytes_size + length;
 
-				unsigned char* new_bytes = nullptr;
-				int total_new_length = this->remaining_bytes_size + length;
-				new_bytes = new unsigned char[total_new_length];
-				memset(new_bytes, 0, total_new_length);
-				
-				if(c_buf != nullptr)
-					memcpy(new_bytes, c_buf, this->remaining_bytes_size);
-				
-				memcpy(new_bytes + this->remaining_bytes_size, this->data_, length);
+				unsigned char* new_bytes = new unsigned char[total_new_length];
+				memset(new_bytes, 0, total_new_length);				
+				memcpy(new_bytes, this->buff, remaining_bytes_size);
+				memcpy(new_bytes + remaining_bytes_size, this->data_, length);
 
-				char buff[max_length] = { 0 };
-				for (this->read_pointer = 0; this->read_pointer < total_new_length; this->read_pointer++)
+				char* _temp = this->buff;
+				_temp += strlen(this->buff); 
+				int write_index = 0;
+				for (int write_index = 0, read_pointer = 0; read_pointer < total_new_length; read_pointer++, write_index++)
 				{					
-					buff[this->read_pointer] = new_bytes[this->read_pointer];
-
-					if (new_bytes[this->read_pointer] == ')')
+					_temp[write_index] = new_bytes[read_pointer];
+					if (new_bytes[read_pointer] == ')')
 					{
 						//Write the processed data to the zmq publisher
-						zmq_send(zmq_pub_obj, buff, this->read_pointer + 1, 0);
-						memset(buff, 0, max_length);
-						this->read_pointer++;
+						zmq_msg_t msg;
+						int rc = zmq_msg_init_size(&msg, write_index + 1);
+						assert(rc == 0);
+						memcpy(zmq_msg_data(&msg), this->buff, write_index + 1);
+						rc = zmq_sendmsg(zmq_pub_obj, &msg, 0);
+						assert(rc == 0);
+						memset(this->buff, 0, max_length);
+						_temp = buff;
+						write_index = -1;
 					}
 				}
 
-				this->remaining_bytes_size = total_new_length - this->read_pointer;
-				if (this->remaining_bytes_size > 0)
-				{
-					unsigned char* remaining_bytes = new unsigned char[this->remaining_bytes_size];
-					remaining_bytes = { 0 };
-					memcpy(remaining_bytes, new_bytes + this->read_pointer, this->remaining_bytes_size);
-					this->left_over_bytes = std::make_shared<boost::asio::mutable_buffer>(remaining_bytes, this->remaining_bytes_size);
-				}
-				else this->left_over_bytes = nullptr;
+				delete new_bytes;
+				do_read();
 			}
 		});
 	}
 
-	void do_write(std::size_t length)
+	void setup_writeprocess()
 	{
 		auto self(shared_from_this());
-		boost::asio::async_write(socket_, boost::asio::buffer(data_, length),
-			[this, self](boost::system::error_code ec, std::size_t /*length*/)
+		std::thread t = std::thread([this, self]
 		{
-			if (!ec)
+			while (true)
 			{
-				do_read();
+				zmq_msg_t msg;
+				int rc = zmq_msg_init(&msg);
+				assert(rc == 0);
+				rc = zmq_recvmsg(zmq_pub_obj, &msg, 0);
+
+			    std::shared_ptr<data_downstream> ds();
+				memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
+
+				assert(rc == 0);
+				/* Release message */ zmq_msg_close(&msg);
+
+				//read from the output buffer and send to the device...
+				boost::asio::async_write(socket_, boost::asio::buffer(ds, sizeof(data_downstream)),
+					[this, self](boost::system::error_code ec, std::size_t /*length*/)
+				{
+					if (!ec)
+					{
+
+					}
+				});
 			}
-		});
+		}, nullptr);
 	}
 
 	void* zmq_pub_obj;
 	tcp::socket socket_;
 	enum { max_length = 1024 };
 	char data_[max_length];
-	unsigned int remaining_bytes_size = 0, read_pointer = 0;
+	char buff[max_length] = { 0 };
 	std::shared_ptr<boost::asio::mutable_buffer> left_over_bytes;
 };
