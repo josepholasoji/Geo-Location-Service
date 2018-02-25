@@ -5,7 +5,9 @@
 #include "tk103.h"
 #include "..\sdk\data_payload_from_device.h"
 #include "..\sdk\data_downstream.h"
-
+#include <thread>
+#include <zmq.h>
+#include <zmq_utils.h>
 
 // This is an example of an exported variable
 TK103_API int ntk103=0;
@@ -81,6 +83,10 @@ Ctk103::Ctk103()
 		{ "BV02" ,{ "BV02","Answer enquiring of one key setting","Answer control sign",_command_message_enum::BV02 } }
 	};
 
+	//Subscribe to the 
+	zmq_context = zmq_ctx_new();
+	zmq_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
+	zmq_bind(zmq_socket_handle, "tcp://*:5555");
 
     return;
 }
@@ -96,6 +102,19 @@ gps * Ctk103::detect(unsigned char*, int len)
 
 void Ctk103::start()
 {
+
+
+
+	std::thread t = std::thread([this]
+	{
+		while (true)
+		{
+
+
+
+		}
+	}, nullptr);
+
 	started = true;
 	while (started)
 	{
@@ -128,11 +147,27 @@ void Ctk103::config()
 
 unsigned char* Ctk103::read()
 {
+	zmq_msg_t msg;
+	int rc = zmq_msg_init(&msg);
+
+	assert(rc == 0);
+	rc = zmq_recvmsg(zmq_in_socket_handle, &msg, 0);
+
+	std::shared_ptr<data_downstream> ds();
+	memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
+
+	assert(rc == 0);
+	zmq_msg_close(&msg);
 	return 0;
 }
 
 int Ctk103::write(unsigned char* ch)
 {
+	zmq_msg_t msg;
+	int rc = zmq_msg_init_size(&msg, write_index + 1);
+	assert(rc == 0);
+	memcpy(zmq_msg_data(&msg), ch, write_index + 1);
+	rc = zmq_sendmsg(zmq_out_socket_handle, &msg, 0);
 	return 0;
 }
 

@@ -82,6 +82,7 @@ private:
 			{
 				zmq_msg_t msg;
 				int rc = zmq_msg_init(&msg);
+
 				assert(rc == 0);
 				rc = zmq_recvmsg(zmq_pub_obj, &msg, 0);
 
@@ -89,7 +90,7 @@ private:
 				memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
 
 				assert(rc == 0);
-				/* Release message */ zmq_msg_close(&msg);
+				zmq_msg_close(&msg);
 
 				//read from the output buffer and send to the device...
 				boost::asio::async_write(socket_, boost::asio::buffer(ds, sizeof(data_downstream)),

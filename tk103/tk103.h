@@ -270,8 +270,11 @@ public:
 
 	//
 	unsigned char* read();
-	int write(unsigned char* ch);
+	int write(unsigned char* ch, int size);
 	data_payload_from_device * process(unsigned char* ch);
+
+	void *zmq_context;
+	void *zmq_in_socket_handle, *zmq_out_socket_handle;
 };
 
 extern TK103_API int ntk103;
