@@ -5,8 +5,9 @@
 #include "modelutil.h"
 #include <iostream>
 #include "..\tk103\tk103.h"
+#include <tuple>
 
-#pragma comment(lib, "tk103.lib")
+#pragma comment(lib, " ")
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace unittests
@@ -34,7 +35,9 @@ namespace unittests
 			data_payload_from_device* _data_payload_from_device = {0};
 			auto _tuple = utils::strip_start_and_end_tags(tk103_ascii_gps_data);
 			
-			_data_payload_from_device = tk103.process(std::get<0>(_tuple));
+			auto proccessd_data = tk103.process(std::get<0>(_tuple));
+			_data_payload_from_device = (data_payload_from_device*)std::get<0>(proccessd_data);
+			int length = (int)std::get<1>(proccessd_data);
 			Assert::IsNotNull(_data_payload_from_device);
 
 			std::string command_string = std::string(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command, sizeof(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command));

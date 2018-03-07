@@ -93,7 +93,7 @@ private:
 				zmq_msg_close(&msg);
 
 				//read from the output buffer and send to the device...
-				boost::asio::async_write(socket_, boost::asio::buffer(ds, sizeof(data_downstream)),
+				boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)&ds, sizeof(data_downstream)),
 					[this, self](boost::system::error_code ec, std::size_t /*length*/)
 				{
 					if (!ec)

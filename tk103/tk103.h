@@ -20,6 +20,7 @@
 #include "../sdk/data_payload_from_device.h"
 #include "data_structure.h"
 #include <boost/asio.hpp>
+#include <tuple>
 
 
 //defintions
@@ -271,7 +272,7 @@ public:
 	//
 	unsigned char* read();
 	int write(unsigned char* ch, int size);
-	data_payload_from_device * process(unsigned char* ch);
+	std::tuple<data_payload_from_device*, int> process(unsigned char* ch);
 
 	void *zmq_context;
 	void *zmq_in_socket_handle, *zmq_out_socket_handle;

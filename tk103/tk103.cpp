@@ -8,6 +8,7 @@
 #include <thread>
 #include <zmq.h>
 #include <zmq_utils.h>
+#include <memory>
 
 // This is an example of an exported variable
 TK103_API int ntk103=0;
@@ -20,7 +21,7 @@ TK103_API int fntk103(void)
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103()
+TK103_API Ctk103::Ctk103()
 {
 	device_command_message = {
 	    { "AP00" ,{ "AP00","One time calling message 3.1.5","Device parameter message",_command_message_enum::AP00 } },
@@ -85,13 +86,13 @@ Ctk103::Ctk103()
 
 	//Subscribe to the 
 	zmq_context = zmq_ctx_new();
-	zmq_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
-	zmq_bind(zmq_socket_handle, "tcp://*:5555");
+	zmq_in_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
+	zmq_bind(zmq_in_socket_handle, "tcp://*:5555");
 
     return;
 }
 
-gps * Ctk103::detect(unsigned char*, int len)
+TK103_API gps * Ctk103::detect(unsigned char*, int len)
 {
 	//read();
 	//process();
@@ -102,29 +103,19 @@ gps * Ctk103::detect(unsigned char*, int len)
 
 void Ctk103::start()
 {
-
-
-
-	std::thread t = std::thread([this]
-	{
-		while (true)
-		{
-
-
-
-		}
-	}, nullptr);
-
 	started = true;
-	while (started)
-	{
-		unsigned char* data = read();
-		auto processed_data = process(data);
-		unsigned char* out_data = (unsigned char*)processed_data;
-		write(out_data);
-	}
 
-	//finalize process stopping here...
+	std::thread t([this]
+	{
+		while (started)
+		{
+			unsigned char* data = read();
+			auto processed_data = process(data);
+			unsigned char* out_data = (unsigned char*)std::get<0>(processed_data);
+			int length = (int)std::get<1>(processed_data);
+			write(out_data, length);
+		}
+	});
 }
 
 void Ctk103::stop()
@@ -153,7 +144,7 @@ unsigned char* Ctk103::read()
 	assert(rc == 0);
 	rc = zmq_recvmsg(zmq_in_socket_handle, &msg, 0);
 
-	std::shared_ptr<data_downstream> ds();
+	std::shared_ptr<data_downstream> ds = std::make_shared<data_downstream>();
 	memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
 
 	assert(rc == 0);
@@ -161,19 +152,19 @@ unsigned char* Ctk103::read()
 	return 0;
 }
 
-int Ctk103::write(unsigned char* ch)
+int Ctk103::write(unsigned char* ch, int size)
 {
 	zmq_msg_t msg;
-	int rc = zmq_msg_init_size(&msg, write_index + 1);
+	int rc = zmq_msg_init_size(&msg, size);
 	assert(rc == 0);
-	memcpy(zmq_msg_data(&msg), ch, write_index + 1);
+	memcpy(zmq_msg_data(&msg), ch, size);
 	rc = zmq_sendmsg(zmq_out_socket_handle, &msg, 0);
 	return 0;
 }
 
-data_payload_from_device * Ctk103::process(unsigned char* ch)
+std::tuple<data_payload_from_device*, int> Ctk103::process(unsigned char* ch)
 {
 	data_payload_from_device* out_data = nullptr;
 	data_payload_from_device* in_data = (data_payload_from_device*)ch;
-	return out_data;
+	return { out_data, sizeof(int) };
 }
