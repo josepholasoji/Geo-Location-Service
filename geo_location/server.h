@@ -16,18 +16,25 @@
 #include <utility>
 #include <boost/asio.hpp>
 #include "session.h"
+#include <zmq.h>
+#include <zmq_utils.h>
 
 using boost::asio::ip::tcp;
 
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, short port)
+	server(boost::asio::io_service& io_service, short port, gps* gps)
 		: acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
 		socket_(io_service),
-		zmq_pub_obj(zmq_pub_obj)
+		_gps(gps)
 	{
 		do_accept();
+	}
+
+	~server()
+	{
+		//Stop zero mq
 	}
 
 private:
@@ -38,7 +45,7 @@ private:
 		{
 			if (!ec)
 			{
-				std::make_shared<session>(std::move(socket_), this->zmq_pub_obj)->start();
+				std::make_shared<session>(std::move(socket_), this->_gps )->start();
 			}
 
 			do_accept();
@@ -48,4 +55,6 @@ private:
 	void* zmq_pub_obj;
 	tcp::acceptor acceptor_;
 	tcp::socket socket_;
+	void *zmq_socket_handle = nullptr;
+	gps* _gps;
 };

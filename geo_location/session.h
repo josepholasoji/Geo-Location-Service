@@ -8,25 +8,26 @@
 #include <zmq_utils.h>
 #include <thread>
 #include "../sdk/gps.h"
+#include "Utils.h"
 #include "../sdk/data_downstream.h"
 
 using boost::asio::ip::tcp;
 
+Utils utils;
 class session
 	: public std::enable_shared_from_this<session>
 {
 public:
-	session(tcp::socket socket, void* zmq_pub_obj)
+	session(tcp::socket socket, gps* _gps)
 		: socket_(std::move(socket)),
-		zmq_pub_obj(zmq_pub_obj)
+		_gps(_gps)
 	{
 		memset(this->buff, 0, max_length);
 	}
 
 	void start()
-	{
+	{	
 		do_read();
-		setup_writeprocess();
 	}
 
 private:
@@ -54,14 +55,26 @@ private:
 					_temp[write_index] = new_bytes[read_pointer];
 					if (new_bytes[read_pointer] == ')')
 					{
-						//Write the processed data to the zmq publisher
-						zmq_msg_t msg;
-						int rc = zmq_msg_init_size(&msg, write_index + 1);
-						assert(rc == 0);
-						memcpy(zmq_msg_data(&msg), this->buff, write_index + 1);
-						rc = zmq_sendmsg(zmq_pub_obj, &msg, 0);
-						assert(rc == 0);
+						//detect hardware
+						//void* device = utils.detectDevice(this->buff, max_length);
+
+						//Process the data
+						auto output = _gps->process(this->buff, max_length);
+
+						//write out the output tot device
+						boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)std::get<0>(output), std::get<1>(output)),
+							[this, self](boost::system::error_code ec, std::size_t /*length*/)
+						{
+							if (!ec)
+							{
+
+							}
+						});
+
+
+						//After processing clear buffer
 						memset(this->buff, 0, max_length);
+
 						_temp = buff;
 						write_index = -1;
 					}
@@ -73,42 +86,10 @@ private:
 		});
 	}
 
-	void setup_writeprocess()
-	{
-		auto self(shared_from_this());
-		std::thread t = std::thread([this, self]
-		{
-			while (true)
-			{
-				zmq_msg_t msg;
-				int rc = zmq_msg_init(&msg);
-
-				assert(rc == 0);
-				rc = zmq_recvmsg(zmq_pub_obj, &msg, 0);
-
-			    std::shared_ptr<data_downstream> ds();
-				memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
-
-				assert(rc == 0);
-				zmq_msg_close(&msg);
-
-				//read from the output buffer and send to the device...
-				boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)&ds, sizeof(data_downstream)),
-					[this, self](boost::system::error_code ec, std::size_t /*length*/)
-				{
-					if (!ec)
-					{
-
-					}
-				});
-			}
-		}, nullptr);
-	}
-
-	void* zmq_pub_obj;
+	gps* _gps = nullptr;
 	tcp::socket socket_;
 	enum { max_length = 1024 };
 	char data_[max_length];
-	char buff[max_length] = { 0 };
+    char buff[max_length] = { 0 };
 	std::shared_ptr<boost::asio::mutable_buffer> left_over_bytes;
 };

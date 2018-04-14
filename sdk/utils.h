@@ -11,7 +11,7 @@ public:
 
 	static unsigned char hexval(unsigned char c);
 	static void hex2ascii(const string& in, string& out);
-	static tuple<unsigned char*, int> strip_start_and_end_tags(const char* ch);
+	static unsigned char* strip_start_and_end_tags(const char* ch);
 private:
 
 };
@@ -46,10 +46,14 @@ void utils::hex2ascii(const string& in, string& out)
 	}
 }
 
-tuple<unsigned char*, int> utils::strip_start_and_end_tags(const char* ch)
+unsigned char* utils::strip_start_and_end_tags(const char* ch)
 {
+	int len = strlen(ch);
 	unsigned char *_ch = (unsigned char*)ch;
 	_ch++;
-	int len = strlen(ch) - 1;
-	return { _ch, len };
+
+	_ch += (len - 2);
+	_ch = 0;
+	_ch -= (len - 2);
+	return _ch;
 }

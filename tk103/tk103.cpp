@@ -10,18 +10,18 @@
 #include <zmq_utils.h>
 #include <memory>
 
-// This is an example of an exported variable
-TK103_API int ntk103=0;
 
 // This is an example of an exported function.
-TK103_API int fntk103(void)
+ TK103_API gps*__stdcall load()
 {
-    return 42;
+	gps* _gps =  new Ctk103();
+	return _gps;
 }
+
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-TK103_API Ctk103::Ctk103()
+Ctk103::Ctk103()
 {
 	device_command_message = {
 	    { "AP00" ,{ "AP00","One time calling message 3.1.5","Device parameter message",_command_message_enum::AP00 } },
@@ -61,7 +61,7 @@ TK103_API Ctk103::Ctk103()
 		{ "BP02" ,{ "BP02","Answer	device	parameter	configured message","Device status message",_command_message_enum::BP02 } },
 		{ "BP03" ,{ "BP03","Answer device operated status message","Device status message",_command_message_enum::BP03 } },
 		{ "BP04" ,{ "BP04","Answer calling message 3.2.5","Device status message",_command_message_enum::BP04 } },
-		{ "BP05" ,{ "BP05","Answer	device	login	response	message 3.2.2","Device status message",_command_message_enum::BP05 } },
+		{ "BP05" ,{ "BP05","Device	login 	message 3.2.2","Device status message",_command_message_enum::BP05 } },
 		{ "BP12" ,{ "BP12","Answer vehicle high and low speed limit 3.2.8","Device status message",_command_message_enum::BP12 } },
 		{ "BP07" ,{ "BP07","Message for getting customer successfully","Device status message",_command_message_enum::BP07 } },
 		{ "BR00" ,{ "BR00","Isochronous feedback message 3.2.6","Vehicle Positioning message",_command_message_enum::BR00 } },
@@ -92,13 +92,162 @@ TK103_API Ctk103::Ctk103()
     return;
 }
 
-TK103_API gps * Ctk103::detect(unsigned char*, int len)
+Ctk103::~Ctk103()
 {
-	//read();
-	//process();
-	//write();
+}
 
+void Ctk103::config()
+{
+}
+
+gps * Ctk103::detect(char *, int)
+{
 	return nullptr;
+}
+
+std::tuple<unsigned char*, int> Ctk103::process(char *data, int length)
+{
+	struct _command_message msg = { 0 };
+	data_payload_from_device* deviceData = nullptr;
+
+	auto parsedData = this->processRequest(data);
+
+	switch (std::get<1>(parsedData).type)
+	{
+		case _command_message_enum::AP00:
+		break;
+		case _command_message_enum::AP01:
+            break;
+		case _command_message_enum::AP03:
+            break;
+		case _command_message_enum::AP04:
+            break;
+		case _command_message_enum::AP05:
+            break;
+		case _command_message_enum::AP07:
+            break;
+		case _command_message_enum::AP11:
+            break;
+		case _command_message_enum::AP12:
+            break;
+		case _command_message_enum::AP15:
+            break;
+		case _command_message_enum::AP17:
+            break;
+		case _command_message_enum::AQ00:
+            break;
+		case _command_message_enum::AQ01:
+            break;
+		case _command_message_enum::AQ02:
+            break;
+		case _command_message_enum::AQ03:
+            break;
+		case _command_message_enum::AQ04:
+            break;
+		case _command_message_enum::AR00:
+            break;
+		case _command_message_enum::AR01:
+            break;
+		case _command_message_enum::AR05:
+            break;
+		case _command_message_enum::AR06:
+            break;
+		case _command_message_enum::AS01:
+            break;
+		case _command_message_enum::AS07:
+            break;
+		case _command_message_enum::AT00:
+            break;
+		case _command_message_enum::AV00:
+            break;
+		case _command_message_enum::AV01:
+            break;
+		case _command_message_enum::AV02:
+            break;
+		case _command_message_enum::AV03:
+            break;
+		case _command_message_enum::AX00:
+            break;
+		case _command_message_enum::AX01:
+            break;
+		case _command_message_enum::AX02:
+            break;
+		case _command_message_enum::AX03:
+            break;
+		case _command_message_enum::AX04:
+            break;
+		case _command_message_enum::AX05:
+            break;
+		case _command_message_enum::BO01:
+            break;
+		case _command_message_enum::BP00:
+            break;
+		case _command_message_enum::BP02:
+            break;
+		case _command_message_enum::BP03:
+            break;
+		case _command_message_enum::BP04:
+            break;
+		case _command_message_enum::BP05: //Device login message
+		{
+			std::string id(deviceData->_LOGIN_MESSAGE.id, sizeof(deviceData->_LOGIN_MESSAGE.id));
+			std::string deviceId(deviceData->_LOGIN_MESSAGE.device_id, sizeof(deviceData->_LOGIN_MESSAGE.device_id));
+			std::string output = this->formDeviceResponse(id, "AP05");
+			return { output.c_str(), output.size() };
+		}
+        break;
+		case _command_message_enum::BP12:
+            break;
+		case _command_message_enum::BP07:
+            break;
+		case _command_message_enum::BR00:
+            break;
+		case _command_message_enum::BR01:
+            break;
+		case _command_message_enum::BR02:
+            break;
+		case _command_message_enum::BR05:
+            break;
+		case _command_message_enum::BR06:
+            break;
+		case _command_message_enum::BS04:
+            break;
+		case _command_message_enum::BS05:
+            break;
+		case _command_message_enum::BS06:
+            break;
+		case _command_message_enum::BS08:
+            break;
+		case _command_message_enum::BS09:
+            break;
+		case _command_message_enum::BS20:
+            break;
+		case _command_message_enum::BS21:
+            break;
+		case _command_message_enum::BS23:
+            break;
+		case _command_message_enum::BT00:
+            break;
+		case _command_message_enum::BU00:
+            break;
+		case _command_message_enum::BV00:
+            break;
+		case _command_message_enum::BV01:
+            break;
+		case _command_message_enum::BV02:
+			break;
+		default: {
+
+		}
+	}
+
+	return {};
+}
+
+int Ctk103::serverPort()
+{
+	return 999;
+	return 999;
 }
 
 void Ctk103::start()
@@ -109,14 +258,11 @@ void Ctk103::start()
 	{
 		while (started)
 		{
-			unsigned char* data = read();
-			auto processed_data = process(data);
-			unsigned char* out_data = (unsigned char*)std::get<0>(processed_data);
-			int length = (int)std::get<1>(processed_data);
-			write(out_data, length);
+
 		}
 	});
 }
+
 
 void Ctk103::stop()
 {
@@ -125,15 +271,7 @@ void Ctk103::stop()
 
 void Ctk103::status()
 {
-	switch (istatus)
-	{
-	//default:
-		//return "Unknown status";
-	}
-}
 
-void Ctk103::config()
-{
 }
 
 unsigned char* Ctk103::read()
@@ -162,9 +300,13 @@ int Ctk103::write(unsigned char* ch, int size)
 	return 0;
 }
 
-std::tuple<data_payload_from_device*, int> Ctk103::process(unsigned char* ch)
+TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::processRequest(char* ch)
 {
 	data_payload_from_device* out_data = nullptr;
-	data_payload_from_device* in_data = (data_payload_from_device*)ch;
-	return { out_data, sizeof(int) };
+	data_payload_from_device* in_data = (data_payload_from_device *)(ch);
+
+	struct _command_message msg = this->device_command_message[std::string(in_data->_LOGIN_MESSAGE.command, sizeof(in_data->_LOGIN_MESSAGE.command))];
+
+	return { out_data, msg };
 }
+

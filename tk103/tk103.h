@@ -141,8 +141,11 @@
 //BP04：fix Command Word。
 //Eg.:（080525141830BP04080525A2934.0133N 10627.2544E000.0141830309.6200000000L00000023）
 //Showing the time for send message at 22:18 : 30, on May 25.Upterminal news
-//（center response by one roll call），GPS data acquisition time is May25, 2008， 
-//Universal time is 14 : 18 : 30，”A” shows the data available，29 degrees, 34.0133 minutes north latitude，106 degrees 27.2544 minutes east longitude，speed is 0km / h，the angle is 309.62 degrees, from due north.。
+//（center response by one roll call），
+//GPS data acquisition time is May25, 2008， 
+//Universal time is 14 : 18 : 30，”A” shows the data available，
+//29 degrees, 34.0133 minutes north latitude，106 degrees 27.2544 minutes east longitude，
+//speed is 0km / h，the angle is 309.62 degrees, from due north.。
 //No response
 #define READ_ANSWER_CALLING_MESSAGE (source, id, command, body) sprintf(source, "(%12s%4s%61s)", id, command, body)
 
@@ -249,35 +252,48 @@ enum _command_message_enum
 	BV01,
 	BV02
 };
+extern "C"
+{
+	TK103_API  gps* load();
+}
 
 // This class is exported from the tk103.dll
-class TK103_API Ctk103: gps {
+class Ctk103: public gps {
 public:
 	int istatus;
 	bool started = false;
 	std::map<std::string, struct _command_message > device_command_message;
 
-
-	Ctk103(void);
-	// TODO: add your methods here.
-	// A method to process incoming data from the modem to start communication. 
-	//This is the first methd after the server accepts the connection from the modem.
-	gps* detect(unsigned char*, int len);
-	// After detecting the gps device, this method starts a service thread to service the gps communications.
-	void start();
-	void stop();
-	void status();
-	void config();
+	Ctk103();
+	~ Ctk103();
 
 	//
 	unsigned char* read();
 	int write(unsigned char* ch, int size);
-	std::tuple<data_payload_from_device*, int> process(unsigned char* ch);
+	TK103_API std::tuple<data_payload_from_device*, struct _command_message> processRequest(char* ch);
 
 	void *zmq_context;
 	void *zmq_in_socket_handle, *zmq_out_socket_handle;
+
+
+	// Inherited via gps
+	virtual void start() override;
+
+	virtual void stop() override;
+
+	virtual void status() override;
+
+	virtual void config() override;
+
+
+	// Inherited via gps
+	virtual gps * detect(char *, int) override;
+
+	virtual std::tuple<unsigned char*, int> process(char *, int) override;
+
+	// Inherited via gps
+	virtual int serverPort() override;
 };
 
 extern TK103_API int ntk103;
 
-TK103_API int fntk103(void);
