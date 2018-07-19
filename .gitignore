@@ -15,6 +15,7 @@ ipch/*
 ipch
 *.VC.db
 *.idb
+*.exps
 Debug/**
 Release/**
 ipch/**

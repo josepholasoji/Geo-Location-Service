@@ -21,6 +21,6 @@ public:
 	virtual void stop() = 0;
 	virtual void status() = 0;
 	virtual void config() = 0;
-	virtual std::tuple<unsigned char*, int> process(char*, int) = 0;
+	virtual std::string process(char*, int) = 0;
 };
 

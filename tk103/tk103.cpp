@@ -9,6 +9,9 @@
 #include <zmq.h>
 #include <zmq_utils.h>
 #include <memory>
+#include <boost/chrono.hpp>
+#include "..\sdk\Utils.h"
+#include "..\sdk\otlv4.h"
 
 
 // This is an example of an exported function.
@@ -105,145 +108,6 @@ gps * Ctk103::detect(char *, int)
 	return nullptr;
 }
 
-std::tuple<unsigned char*, int> Ctk103::process(char *data, int length)
-{
-	struct _command_message msg = { 0 };
-	data_payload_from_device* deviceData = nullptr;
-
-	auto parsedData = this->processRequest(data);
-
-	switch (std::get<1>(parsedData).type)
-	{
-		case _command_message_enum::AP00:
-		break;
-		case _command_message_enum::AP01:
-            break;
-		case _command_message_enum::AP03:
-            break;
-		case _command_message_enum::AP04:
-            break;
-		case _command_message_enum::AP05:
-            break;
-		case _command_message_enum::AP07:
-            break;
-		case _command_message_enum::AP11:
-            break;
-		case _command_message_enum::AP12:
-            break;
-		case _command_message_enum::AP15:
-            break;
-		case _command_message_enum::AP17:
-            break;
-		case _command_message_enum::AQ00:
-            break;
-		case _command_message_enum::AQ01:
-            break;
-		case _command_message_enum::AQ02:
-            break;
-		case _command_message_enum::AQ03:
-            break;
-		case _command_message_enum::AQ04:
-            break;
-		case _command_message_enum::AR00:
-            break;
-		case _command_message_enum::AR01:
-            break;
-		case _command_message_enum::AR05:
-            break;
-		case _command_message_enum::AR06:
-            break;
-		case _command_message_enum::AS01:
-            break;
-		case _command_message_enum::AS07:
-            break;
-		case _command_message_enum::AT00:
-            break;
-		case _command_message_enum::AV00:
-            break;
-		case _command_message_enum::AV01:
-            break;
-		case _command_message_enum::AV02:
-            break;
-		case _command_message_enum::AV03:
-            break;
-		case _command_message_enum::AX00:
-            break;
-		case _command_message_enum::AX01:
-            break;
-		case _command_message_enum::AX02:
-            break;
-		case _command_message_enum::AX03:
-            break;
-		case _command_message_enum::AX04:
-            break;
-		case _command_message_enum::AX05:
-            break;
-		case _command_message_enum::BO01:
-            break;
-		case _command_message_enum::BP00:
-            break;
-		case _command_message_enum::BP02:
-            break;
-		case _command_message_enum::BP03:
-            break;
-		case _command_message_enum::BP04:
-            break;
-		case _command_message_enum::BP05: //Device login message
-		{
-			std::string id(deviceData->_LOGIN_MESSAGE.id, sizeof(deviceData->_LOGIN_MESSAGE.id));
-			std::string deviceId(deviceData->_LOGIN_MESSAGE.device_id, sizeof(deviceData->_LOGIN_MESSAGE.device_id));
-			std::string output = this->formDeviceResponse(id, "AP05");
-			return { output.c_str(), output.size() };
-		}
-        break;
-		case _command_message_enum::BP12:
-            break;
-		case _command_message_enum::BP07:
-            break;
-		case _command_message_enum::BR00:
-            break;
-		case _command_message_enum::BR01:
-            break;
-		case _command_message_enum::BR02:
-            break;
-		case _command_message_enum::BR05:
-            break;
-		case _command_message_enum::BR06:
-            break;
-		case _command_message_enum::BS04:
-            break;
-		case _command_message_enum::BS05:
-            break;
-		case _command_message_enum::BS06:
-            break;
-		case _command_message_enum::BS08:
-            break;
-		case _command_message_enum::BS09:
-            break;
-		case _command_message_enum::BS20:
-            break;
-		case _command_message_enum::BS21:
-            break;
-		case _command_message_enum::BS23:
-            break;
-		case _command_message_enum::BT00:
-            break;
-		case _command_message_enum::BU00:
-            break;
-		case _command_message_enum::BV00:
-            break;
-		case _command_message_enum::BV01:
-            break;
-		case _command_message_enum::BV02:
-			break;
-		default: {
-
-		}
-	}
-
-	return {};
-}
-
 int Ctk103::serverPort()
 {
 	return 999;
@@ -300,13 +164,12 @@ int Ctk103::write(unsigned char* ch, int size)
 	return 0;
 }
 
-TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::processRequest(char* ch)
+TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::parseDeviceRequest(char* ch)
 {
-	data_payload_from_device* out_data = nullptr;
 	data_payload_from_device* in_data = (data_payload_from_device *)(ch);
 
 	struct _command_message msg = this->device_command_message[std::string(in_data->_LOGIN_MESSAGE.command, sizeof(in_data->_LOGIN_MESSAGE.command))];
 
-	return { out_data, msg };
+	return { in_data, msg };
 }
 

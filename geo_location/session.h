@@ -62,7 +62,7 @@ private:
 						auto output = _gps->process(this->buff, max_length);
 
 						//write out the output tot device
-						boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)std::get<0>(output), std::get<1>(output)),
+						boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)output.c_str(), output.length()),
 							[this, self](boost::system::error_code ec, std::size_t /*length*/)
 						{
 							if (!ec)

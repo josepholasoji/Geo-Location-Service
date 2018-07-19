@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-817
 	ProjectSection(SolutionItems) = preProject
 		sdk\data_downstream.h = sdk\data_downstream.h
 		sdk\data_payload_from_device.h = sdk\data_payload_from_device.h
+		sdk\dms.h = sdk\dms.h
 		sdk\gps.h = sdk\gps.h
+		sdk\otlv4.h = sdk\otlv4.h
 		utils.cpp = utils.cpp
 	EndProjectSection
 EndProject
@@ -55,5 +57,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E252AE87-5330-44E7-8B4F-CEA958B0C1AA}
 	EndGlobalSection
 EndGlobal

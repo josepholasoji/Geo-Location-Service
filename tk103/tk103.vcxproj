@@ -157,9 +157,11 @@
   <ItemGroup>
     <ClInclude Include="data_structure.h" />
     <ClInclude Include="gps_message_body.h" />
+    <ClInclude Include="mongodb.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tk103.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="data_structure.cpp" />
@@ -178,6 +180,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="gps_message_body.cpp" />
+    <ClCompile Include="mongodb.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
