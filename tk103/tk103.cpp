@@ -95,6 +95,148 @@ Ctk103::Ctk103()
     return;
 }
 
+std::string Ctk103::process(char *data, int size)
+{
+	struct _command_message msg = { 0 };
+	data_payload_from_device* deviceData = nullptr;
+
+	auto parsedData = this->parseDeviceRequest(data);
+	deviceData = std::get<0>(parsedData);
+	switch (std::get<1>(parsedData).type)
+	{
+	case _command_message_enum::AP00:
+		break;
+	case _command_message_enum::AP01:
+		break;
+	case _command_message_enum::AP03:
+		break;
+	case _command_message_enum::AP04:
+		break;
+	case _command_message_enum::AP05:
+		break;
+	case _command_message_enum::AP07:
+		break;
+	case _command_message_enum::AP11:
+		break;
+	case _command_message_enum::AP12:
+		break;
+	case _command_message_enum::AP15:
+		break;
+	case _command_message_enum::AP17:
+		break;
+	case _command_message_enum::AQ00:
+		break;
+	case _command_message_enum::AQ01:
+		break;
+	case _command_message_enum::AQ02:
+		break;
+	case _command_message_enum::AQ03:
+		break;
+	case _command_message_enum::AQ04:
+		break;
+	case _command_message_enum::AR00:
+		break;
+	case _command_message_enum::AR01:
+		break;
+	case _command_message_enum::AR05:
+		break;
+	case _command_message_enum::AR06:
+		break;
+	case _command_message_enum::AS01:
+		break;
+	case _command_message_enum::AS07:
+		break;
+	case _command_message_enum::AT00:
+		break;
+	case _command_message_enum::AV00:
+		break;
+	case _command_message_enum::AV01:
+		break;
+	case _command_message_enum::AV02:
+		break;
+	case _command_message_enum::AV03:
+		break;
+	case _command_message_enum::AX00:
+		break;
+	case _command_message_enum::AX01:
+		break;
+	case _command_message_enum::AX02:
+		break;
+	case _command_message_enum::AX03:
+		break;
+	case _command_message_enum::AX04:
+		break;
+	case _command_message_enum::AX05:
+		break;
+	case _command_message_enum::BO01:
+		break;
+	case _command_message_enum::BP00: //Device handshake...
+	{
+		return _gps_service.deviceHandshake(deviceData);
+	}
+	break;
+	case _command_message_enum::BP02:
+		break;
+	case _command_message_enum::BP03:
+		break;
+	case _command_message_enum::BP04:
+		break;
+	case _command_message_enum::BP05: //Device login message
+	{
+		return _gps_service.deviceLogin(deviceData);
+	}
+	break;
+	case _command_message_enum::BP12:
+		break;
+	case _command_message_enum::BP07:
+		break;
+	case _command_message_enum::BR00://Device feedbac message
+	{
+		return _gps_service.deviceFeedback(deviceData);
+	}
+	break;
+	case _command_message_enum::BR01:
+		break;
+	case _command_message_enum::BR02:
+		break;
+	case _command_message_enum::BR05:
+		break;
+	case _command_message_enum::BR06:
+		break;
+	case _command_message_enum::BS04:
+		break;
+	case _command_message_enum::BS05:
+		break;
+	case _command_message_enum::BS06:
+		break;
+	case _command_message_enum::BS08:
+		break;
+	case _command_message_enum::BS09:
+		break;
+	case _command_message_enum::BS20:
+		break;
+	case _command_message_enum::BS21:
+		break;
+	case _command_message_enum::BS23:
+		break;
+	case _command_message_enum::BT00:
+		break;
+	case _command_message_enum::BU00:
+		break;
+	case _command_message_enum::BV00:
+		break;
+	case _command_message_enum::BV01:
+		break;
+	case _command_message_enum::BV02:
+		break;
+	default: {
+
+	}
+	}
+
+	return {};
+}
+
 Ctk103::~Ctk103()
 {
 }

@@ -9,7 +9,6 @@
 #include <memory>
 #include <tuple>
 
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
@@ -53,6 +52,7 @@ namespace unittests
 			_data_payload_from_device = (data_payload_from_device*)(tk103_ascii_device_login_request);
 			Assert::IsNotNull(_data_payload_from_device);
 
+			//DB setup should be setup for this test to pass: device id => 000013632782450
 			std::string output = _gps->process((char*)tk103_ascii_device_login_request, 0);
 			Assert::AreEqual(tk103_ascii_device_login_response, output.c_str());
 		}

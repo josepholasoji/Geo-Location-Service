@@ -1,3 +1,5 @@
+#pragma once
+
 struct data_downstream
 {
 	unsigned short version;

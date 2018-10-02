@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libzmq-v120-mt-gd-4_0_4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libzmq-v120-mt-gd-4_0_4.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="data_structure.h" />
     <ClInclude Include="gps_message_body.h" />
+    <ClInclude Include="gps_service.h" />
     <ClInclude Include="mongodb.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -180,6 +181,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="gps_message_body.cpp" />
+    <ClCompile Include="gps_service.cpp" />
     <ClCompile Include="mongodb.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
