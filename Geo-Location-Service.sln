@@ -11,8 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-817
 	ProjectSection(SolutionItems) = preProject
 		sdk\data_downstream.h = sdk\data_downstream.h
 		sdk\data_payload_from_device.h = sdk\data_payload_from_device.h
+		sdk\dms.h = sdk\dms.h
 		sdk\gps.h = sdk\gps.h
-		utils.cpp = utils.cpp
+		sdk\otlv4.h = sdk\otlv4.h
+		sdk\Utils.h = sdk\Utils.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcxproj", "{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}"
@@ -30,24 +32,24 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x64.ActiveCfg = Debug|x64
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x64.Build.0 = Debug|x64
-		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x86.ActiveCfg = Debug|Win32
-		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x86.Build.0 = Debug|Win32
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x86.ActiveCfg = Debug|x64
+		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Debug|x86.Build.0 = Debug|x64
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x64.ActiveCfg = Release|x64
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x64.Build.0 = Release|x64
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x86.ActiveCfg = Release|Win32
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE}.Release|x86.Build.0 = Release|Win32
 		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x64.ActiveCfg = Debug|x64
 		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x64.Build.0 = Debug|x64
-		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x86.ActiveCfg = Debug|Win32
-		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x86.Build.0 = Debug|Win32
+		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x86.ActiveCfg = Debug|x64
+		{473649D2-4578-4712-8AC6-669332E19085}.Debug|x86.Build.0 = Debug|x64
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x64.ActiveCfg = Release|x64
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x64.Build.0 = Release|x64
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x86.ActiveCfg = Release|Win32
 		{473649D2-4578-4712-8AC6-669332E19085}.Release|x86.Build.0 = Release|Win32
 		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x64.ActiveCfg = Debug|x64
 		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x64.Build.0 = Debug|x64
-		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x86.ActiveCfg = Debug|Win32
-		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x86.Build.0 = Debug|Win32
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x86.ActiveCfg = Debug|x64
+		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Debug|x86.Build.0 = Debug|x64
 		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x64.ActiveCfg = Release|x64
 		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x64.Build.0 = Release|x64
 		{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}.Release|x86.ActiveCfg = Release|Win32
@@ -55,5 +57,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E252AE87-5330-44E7-8B4F-CEA958B0C1AA}
 	EndGlobalSection
 EndGlobal

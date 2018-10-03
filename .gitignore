@@ -10,10 +10,12 @@
 *.dll
 *.lib
 *.log
+*.exe
 ipch/*
 ipch
 *.VC.db
 *.idb
+*.exps
 Debug/**
 Release/**
 ipch/**
@@ -21,3 +23,6 @@ geo_location/Debug/**
 geo_location/Release/**
 tk103/Debug/**
 tk103/Release/**
+x64/Debug/**
+x64/Release/**
+emulator/**
