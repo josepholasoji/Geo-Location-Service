@@ -10,6 +10,7 @@
 #include "../sdk/gps.h"
 #include "Utils.h"
 #include "../sdk/data_downstream.h"
+#include <boost/algorithm/string.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -59,16 +60,15 @@ private:
 						//void* device = utils.detectDevice(this->buff, max_length);
 
 						//Process the data
-						auto output = _gps->process(this->buff, max_length);
+						std::string s = std::string(this->buff);
+						boost::trim(s);
+						auto output = _gps->process((char*)s.c_str(), max_length);
 
 						//write out the output tot device
 						boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)output.c_str(), output.length()),
 							[this, self](boost::system::error_code ec, std::size_t /*length*/)
 						{
-							if (!ec)
-							{
-
-							}
+							if (!ec){}
 						});
 
 

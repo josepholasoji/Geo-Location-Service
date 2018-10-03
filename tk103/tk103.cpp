@@ -197,8 +197,10 @@ std::string Ctk103::process(char *data, int size)
 	break;
 	case _command_message_enum::BR01:
 		break;
-	case _command_message_enum::BR02:
-		break;
+	case _command_message_enum::BR02: {
+		return _gps_service.deviceFeedbackEnding(deviceData);
+	}
+	break;
 	case _command_message_enum::BR05:
 		break;
 	case _command_message_enum::BR06:
@@ -252,7 +254,6 @@ gps * Ctk103::detect(char *, int)
 
 int Ctk103::serverPort()
 {
-	return 999;
 	return 999;
 }
 
