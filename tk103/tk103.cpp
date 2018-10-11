@@ -11,7 +11,6 @@
 #include <memory>
 #include <boost/chrono.hpp>
 #include "..\sdk\Utils.h"
-#include "..\sdk\otlv4.h"
 
 
 // This is an example of an exported function.

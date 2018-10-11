@@ -40,8 +40,8 @@ private:
 		{
 			if (!ec)
 			{
-				int remaining_bytes_size = strlen(this->buff),
-				    total_new_length = remaining_bytes_size + length;
+				size_t remaining_bytes_size = strlen(this->buff),
+				       total_new_length     = remaining_bytes_size + length;
 
 				unsigned char* new_bytes = new unsigned char[total_new_length];
 				memset(new_bytes, 0, total_new_length);				
