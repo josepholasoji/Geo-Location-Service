@@ -24,6 +24,7 @@
 #include <boost/asio.hpp>
 #include <tuple>
 #include "gps_service.h"
+#include "..\sdk\sdk.h"
 
 //Miscs
 #define GPScharsToString(x) std::string((char*)&x, sizeof(x))
@@ -259,7 +260,7 @@ enum _command_message_enum
 };
 extern "C"
 {
-	TK103_API  gps* load();
+	TK103_API  gps* load(LPGPS_HANDLERS);
 }
 
 // This class is exported from the tk103.dll
@@ -271,7 +272,9 @@ public:
 	std::string deviceId;
 	gps_service _gps_service;
 
-	Ctk103();
+	LPGPS_HANDLERS handlers;
+
+	Ctk103(LPGPS_HANDLERS);
 	~ Ctk103();
 
 	//

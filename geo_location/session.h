@@ -19,9 +19,9 @@ class session
 	: public std::enable_shared_from_this<session>
 {
 public:
-	session(tcp::socket socket, gps* _gps)
+	session(tcp::socket socket, LPGPS _gps)
 		: socket_(std::move(socket)),
-		_gps(_gps)
+		gps(_gps)
 	{
 		memset(this->buff, 0, max_length);
 	}
@@ -41,7 +41,7 @@ private:
 			if (!ec)
 			{
 				size_t remaining_bytes_size = strlen(this->buff),
-				       total_new_length     = remaining_bytes_size + length;
+				    total_new_length = remaining_bytes_size + length;
 
 				unsigned char* new_bytes = new unsigned char[total_new_length];
 				memset(new_bytes, 0, total_new_length);				
@@ -62,7 +62,7 @@ private:
 						//Process the data
 						std::string s = std::string(this->buff);
 						boost::trim(s);
-						auto output = _gps->process((char*)s.c_str(), max_length);
+						auto output = gps->process((char*)s.c_str(), max_length);
 
 						//write out the output tot device
 						boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)output.c_str(), output.length()),
@@ -86,7 +86,7 @@ private:
 		});
 	}
 
-	gps* _gps = nullptr;
+	LPGPS gps = nullptr;
 	tcp::socket socket_;
 	enum { max_length = 1024 };
 	char data_[max_length];

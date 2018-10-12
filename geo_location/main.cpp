@@ -17,12 +17,17 @@ using namespace std;
 
 
 typedef int(__stdcall *f_funci)();
-typedef gps*(__stdcall *f_load)();
+typedef gps*(__stdcall *f_load)(LPGPS_HANDLERS);
 
 
+//Function signatures
+void log_feedback_sql(device_feedback* device_feeback);
+void log_feedback(device_feedback* device_feeback, __data_store data_store_selection);
+
+//
 otl_connect db;
 char dir_path[] = "./gps";
-GPS_HANDLERS *handlers = nullptr;
+LPGPS_HANDLERS handlers = nullptr;
 
 void log_feedback(device_feedback* device_feeback, __data_store data_store_selection) {
 
@@ -116,7 +121,7 @@ int main()
 		cerr << p.stm_text << endl; // print out SQL that caused the error
 	}
 
-	handlers = (GPS_HANDLERS*) malloc(sizeof(GPS_HANDLERS));
+	handlers = (LPGPS_HANDLERS) malloc(sizeof(GPS_HANDLERS));
 	handlers->log_feedback = log_feedback;
 	handlers->is_device_registered = is_device_registered;
 
@@ -150,7 +155,7 @@ int main()
 				return EXIT_FAILURE;
 			}
 
-			gpses->push_back(load());
+			gpses->push_back(load(handlers));
 		} while (FindNextFile(search_handle, &file));
 		FindClose(search_handle);
 	}

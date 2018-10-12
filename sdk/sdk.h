@@ -42,4 +42,4 @@ struct __gps__ {
 	bool (*is_device_registered)(char *);
 };
 
-typedef struct __gps__ GPS_HANDLERS;
+typedef struct __gps__ GPS_HANDLERS, *LPGPS_HANDLERS;

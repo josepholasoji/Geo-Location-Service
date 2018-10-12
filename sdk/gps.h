@@ -24,3 +24,4 @@ public:
 	virtual std::string process(char*, int) = 0;
 };
 
+typedef class gps GPS, *LPGPS;

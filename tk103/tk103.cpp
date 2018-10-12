@@ -14,17 +14,19 @@
 
 
 // This is an example of an exported function.
- TK103_API gps*__stdcall load()
+ TK103_API gps*__stdcall load(LPGPS_HANDLERS handlers)
 {
-	gps* _gps =  new Ctk103();
+	gps* _gps =  new Ctk103(handlers);
 	return _gps;
 }
 
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103()
+Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
 {
+	this->handlers = _handlers;
+
 	device_command_message = {
 	    { "AP00" ,{ "AP00","One time calling message 3.1.5","Device parameter message",_command_message_enum::AP00 } },
 		{ "AP01" ,{ "AP01","Response handshake signal message 3.1.1","Device parameter message",_command_message_enum::AP01 } },

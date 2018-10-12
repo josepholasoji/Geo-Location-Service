@@ -28,7 +28,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DataProcessor)
 		{
-			Ctk103* _gps = (Ctk103*)load();
+			Ctk103* _gps = (Ctk103*)load(nullptr);
 			
 			data_payload_from_device* _data_payload_from_device = {0};
 			
@@ -45,7 +45,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceLogin)
 		{
-			Ctk103* _gps = (Ctk103*)load();
+			Ctk103* _gps = (Ctk103*)load(nullptr);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 
@@ -59,7 +59,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceHandshake)
 		{
-			Ctk103* _gps = (Ctk103*)load();
+			Ctk103* _gps = (Ctk103*)load(nullptr);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 
@@ -72,7 +72,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceFeedbackMessage)
 		{
-			Ctk103* _gps = (Ctk103*)load();
+			Ctk103* _gps = (Ctk103*)load(nullptr);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 
@@ -85,7 +85,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceFeedbacEndingMessage)
 		{
-			Ctk103* _gps = (Ctk103*)load();
+			Ctk103* _gps = (Ctk103*)load(nullptr);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 

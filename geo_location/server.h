@@ -24,10 +24,10 @@ using boost::asio::ip::tcp;
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, short port, gps* gps)
+	server(boost::asio::io_service& io_service, short port, LPGPS gps)
 		: acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
 		socket_(io_service),
-		_gps(gps)
+		gps(gps)
 	{
 		do_accept();
 	}
@@ -45,7 +45,7 @@ private:
 		{
 			if (!ec)
 			{
-				std::make_shared<session>(std::move(socket_), this->_gps )->start();
+				std::make_shared<session>(std::move(socket_), this->gps )->start();
 			}
 
 			do_accept();
@@ -56,5 +56,5 @@ private:
 	tcp::acceptor acceptor_;
 	tcp::socket socket_;
 	void *zmq_socket_handle = nullptr;
-	gps* _gps;
+	LPGPS gps;
 };
