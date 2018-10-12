@@ -24,8 +24,17 @@ otl_connect db;
 char dir_path[] = "./gps";
 GPS_HANDLERS *handlers = nullptr;
 
-void log_feedback(device_feedback* device_feeback) {
+void log_feedback(device_feedback* device_feeback, __data_store data_store_selection) {
 
+	if (data_store_selection == __data_store::SQLDB) {
+		log_feedback_sql(device_feeback);
+	}
+	else if (data_store_selection == __data_store::MONGODB) {
+
+	}
+	else if (data_store_selection == __data_store::REDIS) {
+
+	}
 }
 
 void log_feedback_sql(device_feedback* device_feeback) {
@@ -107,7 +116,7 @@ int main()
 		cerr << p.stm_text << endl; // print out SQL that caused the error
 	}
 
-	handlers = (GPS_HANDLERS*)malloc(sizeof(GPS_HANDLERS));
+	handlers = (GPS_HANDLERS*) malloc(sizeof(GPS_HANDLERS));
 	handlers->log_feedback = log_feedback;
 	handlers->is_device_registered = is_device_registered;
 

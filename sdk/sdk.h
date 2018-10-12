@@ -1,6 +1,12 @@
 #pragma once
 #include <memory>
 
+enum __data_store {
+	SQLDB,
+	MONGODB,
+	REDIS
+};
+
 struct datetime {
 	int year;
 	int month;
@@ -32,7 +38,7 @@ struct device_login
 };
 
 struct __gps__ {
-	void  (*log_feedback)(device_feedback*);
+	void  (*log_feedback)(device_feedback*, __data_store);
 	bool (*is_device_registered)(char *);
 };
 
