@@ -25,6 +25,10 @@ char dir_path[] = "./gps";
 GPS_HANDLERS *handlers = nullptr;
 
 void log_feedback(device_feedback* device_feeback) {
+
+}
+
+void log_feedback_sql(device_feedback* device_feeback) {
 	//save the location details
 	try
 	{
@@ -33,17 +37,25 @@ void log_feedback(device_feedback* device_feeback) {
 			"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
 			db);
 
-		//o.set_commit(0);
+		o.set_commit(0);
 
-		//o << _dateTime
-		//	<< dlat
-		//	<< dlon
-		//	<< this->deviceId.c_str()
-		//	<< dorientation
-		//	<< dspeed
-		//	<< (main_power_switch_on ? 1 : 0)
-		//	<< (acc_ignition_on ? 1 : 0)
-		//	<< (double)dmile_data;
+		otl_datetime _dateTime;
+		_dateTime.day = device_feeback->_dateTime.day;
+		_dateTime.month = device_feeback->_dateTime.month;		
+		_dateTime.year = std::atoi(std::string("20" +  std::to_string(device_feeback->_dateTime.year)).c_str());
+		_dateTime.hour = device_feeback->_dateTime.hour;
+		_dateTime.minute = device_feeback->_dateTime.minute;
+		_dateTime.second = device_feeback->_dateTime.second;
+
+		o << _dateTime
+			<< device_feeback->dlat
+			<< device_feeback->dlon
+			<< device_feeback ->deviceId
+			<< device_feeback ->dorientation
+			<< device_feeback ->dspeed
+			<< (device_feeback ->main_power_switch_on ? 1 : 0)
+			<< (device_feeback ->acc_ignition_on ? 1 : 0)
+			<< (double)device_feeback ->dmile_data;
 	}
 	catch (otl_exception& p) {
 		cerr << p.msg << endl; // print out error message
