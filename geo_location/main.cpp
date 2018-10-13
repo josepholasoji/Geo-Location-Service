@@ -22,14 +22,18 @@ typedef gps*(__stdcall *f_load)(LPGPS_HANDLERS);
 
 //Function signatures
 void log_feedback_sql(device_feedback* device_feeback);
-void log_feedback(device_feedback* device_feeback, __data_store data_store_selection);
+void log_feedback(device_feedback* device_feeback);
 
 //
 otl_connect db;
 char dir_path[] = "./gps";
 LPGPS_HANDLERS handlers = nullptr;
 
-void log_feedback(device_feedback* device_feeback, __data_store data_store_selection) {
+void log_feedback(device_feedback* device_feeback) {
+
+	//TODO:load default feedback store from the db, 
+	//remove the static assignment below
+	__data_store data_store_selection = __data_store::SQLDB;
 
 	if (data_store_selection == __data_store::SQLDB) {
 		log_feedback_sql(device_feeback);
@@ -80,7 +84,7 @@ void log_feedback_sql(device_feedback* device_feeback) {
 	}
 }
 
-bool is_device_registered(char* deviceId) {
+bool is_device_registered(const char* deviceId) {
 	try {
 		int is_device_registered = 0;
 		otl_stream o(1, "{call find_device(:device_id<char[20],in>, @registered)}", db);

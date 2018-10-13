@@ -4,6 +4,7 @@
 #include "..\sdk\gps.h"
 #include "..\sdk\data_payload_from_device.h"
 #include "../tk103/tk103.h"
+#include "..\sdk\sdk.h"
 #include "modelutil.h"
 #include <iostream>
 #include <memory>
@@ -14,9 +15,21 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace unittests
 {		
-	TEST_CLASS(unittests)
+	TEST_CLASS(unittests_withmocks)
 	{
 	public:
+
+		LPGPS_HANDLERS evenHandlers = nullptr;
+
+		TEST_METHOD_INITIALIZE(startup) {
+		    evenHandlers = new GPS_HANDLERS();
+			evenHandlers->is_device_registered = [](const char *) {return true; };
+			evenHandlers->log_feedback = [](device_feedback*)->void {return; };
+		}
+
+		TEST_METHOD_CLEANUP(cleanup) {
+			delete evenHandlers;
+		}
 		
 		TEST_METHOD(convertHexValuesToAscii)
 		{
@@ -28,7 +41,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DataProcessor)
 		{
-			Ctk103* _gps = (Ctk103*)load(nullptr);
+			Ctk103* _gps = (Ctk103*)load(evenHandlers);
 			
 			data_payload_from_device* _data_payload_from_device = {0};
 			
@@ -45,7 +58,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceLogin)
 		{
-			Ctk103* _gps = (Ctk103*)load(nullptr);
+			Ctk103* _gps = (Ctk103*)load(evenHandlers);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 
@@ -59,7 +72,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceHandshake)
 		{
-			Ctk103* _gps = (Ctk103*)load(nullptr);
+			Ctk103* _gps = (Ctk103*)load(evenHandlers);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 
@@ -72,7 +85,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceFeedbackMessage)
 		{
-			Ctk103* _gps = (Ctk103*)load(nullptr);
+			Ctk103* _gps = (Ctk103*)load(evenHandlers);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 
@@ -85,7 +98,7 @@ namespace unittests
 
 		TEST_METHOD(testTK103DeviceFeedbacEndingMessage)
 		{
-			Ctk103* _gps = (Ctk103*)load(nullptr);
+			Ctk103* _gps = (Ctk103*)load(evenHandlers);
 
 			data_payload_from_device* _data_payload_from_device = { 0 };
 

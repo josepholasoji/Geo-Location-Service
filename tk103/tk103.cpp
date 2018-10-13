@@ -93,6 +93,7 @@ Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
 	zmq_in_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
 	zmq_bind(zmq_in_socket_handle, "tcp://*:5555");
 
+	_gps_service.set_handlers(this->handlers);
     return;
 }
 

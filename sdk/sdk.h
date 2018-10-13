@@ -38,8 +38,8 @@ struct device_login
 };
 
 struct __gps__ {
-	void  (*log_feedback)(device_feedback*, __data_store);
-	bool (*is_device_registered)(char *);
+	void  (*log_feedback)(device_feedback*);
+	bool (*is_device_registered)(const char *);
 };
 
 typedef struct __gps__ GPS_HANDLERS, *LPGPS_HANDLERS;
