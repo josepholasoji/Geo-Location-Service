@@ -50,20 +50,21 @@ void log_feedback_sql(device_feedback* device_feeback) {
 	//save the location details
 	try
 	{
-		int is_device_registered = 0;
+		//
+		otl_datetime _dateTime;
+		_dateTime.day = device_feeback->_dateTime->day;
+		_dateTime.month = device_feeback->_dateTime->month;
+		_dateTime.year = std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str());
+		_dateTime.hour = device_feeback->_dateTime->hour;
+		_dateTime.minute = device_feeback->_dateTime->minute;
+		_dateTime.second = device_feeback->_dateTime->second;
+
+		//
 		otl_stream o(1,
 			"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
 			db);
 
 		o.set_commit(0);
-
-		otl_datetime _dateTime;
-		_dateTime.day = device_feeback->_dateTime.day;
-		_dateTime.month = device_feeback->_dateTime.month;		
-		_dateTime.year = std::atoi(std::string("20" +  std::to_string(device_feeback->_dateTime.year)).c_str());
-		_dateTime.hour = device_feeback->_dateTime.hour;
-		_dateTime.minute = device_feeback->_dateTime.minute;
-		_dateTime.second = device_feeback->_dateTime.second;
 
 		o << _dateTime
 			<< device_feeback->dlat
@@ -126,8 +127,10 @@ int main()
 	}
 
 	handlers = (LPGPS_HANDLERS) malloc(sizeof(GPS_HANDLERS));
-	handlers->log_feedback = log_feedback;
-	handlers->is_device_registered = is_device_registered;
+	if (handlers != nullptr) {
+		handlers->log_feedback = log_feedback;
+		handlers->is_device_registered = is_device_registered;
+	}
 
 	auto  gpses = std::make_shared<std::vector<gps*>>();
 
@@ -148,7 +151,7 @@ int main()
 			HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)std::wstring(L"services\\").append(file.cFileName).c_str());
 
 			if (!hGetProcIDDLL) {
-				std::cout << "could not load the dynamic library" << std::endl;
+				std::cout << "could not load the GPS service file" << std::endl;
 				return EXIT_FAILURE;
 			}
 

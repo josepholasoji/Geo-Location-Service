@@ -82,12 +82,17 @@
     <LibraryPath>C:\Program Files\ZeroMQ 4.0.4\lib;C:\boost_1_65_1\stage\x64\lib;$(LibraryPath)</LibraryPath>
     <TargetExt>.gps</TargetExt>
     <OutDir>..\bin\services</OutDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\boost_1_65_1;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\boost_1_65_1\stage\x64\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>..\bin\services</OutDir>
+    <TargetExt>.gps</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

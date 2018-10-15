@@ -280,7 +280,7 @@ public:
 	//
 	unsigned char* read();
 	int write(unsigned char* ch, int size);
-	TK103_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(char* ch);
+	TK103_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(const char* ch);
 
 	void *zmq_context;
 	void *zmq_in_socket_handle, *zmq_out_socket_handle;
@@ -295,7 +295,7 @@ public:
 	// Inherited via gps
 	virtual gps * detect(char *, int) override;
 
-	virtual std::string process(char *data, int size);
+	virtual const char* process(const char *data, int size);
 
 	// Inherited via gps
 	virtual int serverPort() override;

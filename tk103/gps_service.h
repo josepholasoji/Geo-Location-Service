@@ -20,10 +20,10 @@ public:
 	std::string deviceId;
 
 	//Device => Server specific messages
-	std::string deviceLogin(data_payload_from_device*  deviceData);
-	std::string deviceFeedback(data_payload_from_device*  deviceData);
-	std::string deviceFeedbackEnding(data_payload_from_device*  deviceData);
-	std::string deviceHandshake(data_payload_from_device*  deviceData);
+	const char* deviceLogin(data_payload_from_device*  deviceData);
+	const char* deviceFeedback(data_payload_from_device*  deviceData);
+	const char* deviceFeedbackEnding(data_payload_from_device*  deviceData);
+	const char* deviceHandshake(data_payload_from_device*  deviceData);
 	void set_handlers(LPGPS_HANDLERS);
 };
 

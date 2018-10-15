@@ -9,6 +9,7 @@ using namespace std;
 gps_service::gps_service()
 {
 	deviceId = std::string("123456");
+	this->handlers = nullptr;
 }
 
 
@@ -17,8 +18,11 @@ gps_service::~gps_service()
  
 }
 
-std::string gps_service::deviceLogin(data_payload_from_device*  deviceData)
+const char* gps_service::deviceLogin(data_payload_from_device*  deviceData)
 {
+	char * output = (char*)malloc(1024);
+	memset((void*)output, 0, 1024);
+
 	std::string id(deviceData->_LOGIN_MESSAGE.id, sizeof(deviceData->_LOGIN_MESSAGE.id));
 	std::string deviceId(deviceData->_LOGIN_MESSAGE.device_id, sizeof(deviceData->_LOGIN_MESSAGE.device_id));
 
@@ -27,7 +31,8 @@ std::string gps_service::deviceLogin(data_payload_from_device*  deviceData)
 	if (isAKnownDevice)
 	{
 		this->deviceId = deviceId;
-		std::string output = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
+		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
+		strcpy_s(output, 1024, o.c_str());
 		return output;
 	}
 	else
@@ -37,7 +42,7 @@ std::string gps_service::deviceLogin(data_payload_from_device*  deviceData)
 
 }
 
-std::string gps_service::deviceFeedback(data_payload_from_device*  deviceData)
+const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 {
 	std::string dataAvailable = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.dataAvailable);
 	if (dataAvailable._Equal("A")) {
@@ -83,7 +88,7 @@ std::string gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
-		device_feedback *feedback = new device_feedback();
+		device_feedback *feedback = (device_feedback *) malloc(sizeof(device_feedback));
 		feedback->acc_ignition_on = acc_ignition_on;
 		strcpy_s(feedback->deviceId, this->deviceId.c_str());
 		feedback->dlat = dlat;
@@ -93,26 +98,26 @@ std::string gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 		feedback->dspeed = dspeed;
 		feedback->main_power_switch_on = main_power_switch_on;
 
-		datetime __datetime;
-		__datetime.day = std::atoi(GPScharsToString(date.day).c_str());
-		__datetime.month = std::atoi(GPScharsToString(date.month).c_str());
-		__datetime.year = std::atoi(GPScharsToString(date.year).c_str());
+		datetime* __datetime = (datetime *)malloc(sizeof(datetime));;
+		__datetime->day = std::atoi(GPScharsToString(date.day).c_str());
+		__datetime->month = std::atoi(GPScharsToString(date.month).c_str());
+		__datetime->year = std::atoi(GPScharsToString(date.year).c_str());
 
-		__datetime.hour = std::atoi(GPScharsToString(time.hh).c_str());
-		__datetime.minute = std::atoi(GPScharsToString(time.mm).c_str());
-		__datetime.second = std::atoi(GPScharsToString(time.ss).c_str());
+		__datetime->hour = std::atoi(GPScharsToString(time.hh).c_str());
+		__datetime->minute = std::atoi(GPScharsToString(time.mm).c_str());
+		__datetime->second = std::atoi(GPScharsToString(time.ss).c_str());
 
 		feedback->_dateTime = __datetime;
 
 		this->handlers->log_feedback(feedback);
-		delete feedback;
+		free((void*)feedback->_dateTime);
+		free((void*)feedback);
 	}
 
-	std::string output = "";
-	return output;
+	return "";
 }
 
-std::string gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceData)
+const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceData)
 {
 	std::string dataAvailable = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.dataAvailable);
 	if (dataAvailable._Equal("A")) {
@@ -158,7 +163,7 @@ std::string gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
-		device_feedback *feedback = new device_feedback();
+		device_feedback *feedback = (device_feedback *)malloc(sizeof(device_feedback));
 		feedback->acc_ignition_on = acc_ignition_on;
 		strcpy_s(feedback->deviceId, this->deviceId.c_str());
 		feedback->dlat = dlat;
@@ -168,27 +173,30 @@ std::string gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 		feedback->dspeed = dspeed;
 		feedback->main_power_switch_on = main_power_switch_on;
 
-		datetime __datetime;
-		__datetime.day = std::atoi(GPScharsToString(date.day).c_str());
-		__datetime.month = std::atoi(GPScharsToString(date.month).c_str());
-		__datetime.year = std::atoi(GPScharsToString(date.year).c_str());
+		datetime* __datetime = (datetime *)malloc(sizeof(datetime));;
+		__datetime->day = std::atoi(GPScharsToString(date.day).c_str());
+		__datetime->month = std::atoi(GPScharsToString(date.month).c_str());
+		__datetime->year = std::atoi(GPScharsToString(date.year).c_str());
 
-		__datetime.hour = std::atoi(GPScharsToString(time.hh).c_str());
-		__datetime.minute = std::atoi(GPScharsToString(time.mm).c_str());
-		__datetime.second = std::atoi(GPScharsToString(time.ss).c_str());
+		__datetime->hour = std::atoi(GPScharsToString(time.hh).c_str());
+		__datetime->minute = std::atoi(GPScharsToString(time.mm).c_str());
+		__datetime->second = std::atoi(GPScharsToString(time.ss).c_str());
 
 		feedback->_dateTime = __datetime;
 
 		this->handlers->log_feedback(feedback);
-		delete feedback;
+		free((void*)feedback->_dateTime);
+		free((void*)feedback);
 	}
 
-	std::string output = "";
-	return output;
+	return "";
 }
 
-std::string gps_service::deviceHandshake(data_payload_from_device*  deviceData)
+const char* gps_service::deviceHandshake(data_payload_from_device*  deviceData)
 {
+	char * output = (char*) malloc(1024);
+	memset((void*)output, 0, 1024);
+
 	std::string id(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.id, sizeof(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.id));
 	std::string deviceId(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.device_id, sizeof(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.device_id));
 
@@ -198,7 +206,8 @@ std::string gps_service::deviceHandshake(data_payload_from_device*  deviceData)
 	//
 	if (isAKnownDevice)
 	{
-		std::string output = std::move(Utils::formDeviceResponse(id.c_str(), "AP01", "HSO"));
+		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP01", "HSO"));
+		strcpy_s(output, 1024, o.c_str());
 		return output;
 	}
 	else

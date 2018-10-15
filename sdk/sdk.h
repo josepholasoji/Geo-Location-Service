@@ -21,7 +21,7 @@ struct datetime {
 
 struct device_feedback
 {
-	struct datetime _dateTime;
+	struct datetime* _dateTime;
 	double dlat;
 	double dlon;
 	char deviceId[15];

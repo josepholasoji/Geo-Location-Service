@@ -1,11 +1,5 @@
 #pragma once
 
-//The base requiement is are as follows:
-//1. ZeroMQ
-#include <zmq.h>
-#include <zmq_utils.h>
-
-
 class gps
 {
 public:
@@ -21,7 +15,7 @@ public:
 	virtual void stop() = 0;
 	virtual void status() = 0;
 	virtual void config() = 0;
-	virtual std::string process(char*, int) = 0;
+	virtual const char* process(const char*, int) = 0;
 };
 
 typedef class gps GPS, *LPGPS;
