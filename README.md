@@ -1,5 +1,3 @@
-# gps_protocol_server
-
 # INTRODUCTION 
 
 Geolocation service (GS) is a high performance location service middleware. GS is written in C/C++ and its implements the Plugable API architecture and model. This very extensible modular design also  
