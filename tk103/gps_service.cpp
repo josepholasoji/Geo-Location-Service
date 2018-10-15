@@ -98,7 +98,7 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 		feedback->dspeed = dspeed;
 		feedback->main_power_switch_on = main_power_switch_on;
 
-		datetime* __datetime = (datetime *)malloc(sizeof(datetime));;
+		datetime* __datetime = (datetime *)malloc(sizeof(datetime));
 		__datetime->day = std::atoi(GPScharsToString(date.day).c_str());
 		__datetime->month = std::atoi(GPScharsToString(date.month).c_str());
 		__datetime->year = std::atoi(GPScharsToString(date.year).c_str());
