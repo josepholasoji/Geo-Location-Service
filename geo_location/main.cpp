@@ -16,12 +16,13 @@ using namespace std;
 
 
 
-typedef int(__stdcall *f_funci)();
-typedef gps*(__stdcall *f_load)(LPGPS_HANDLERS);
+typedef int  (__stdcall *f_funci)();
+typedef gps* (__stdcall *f_load)(LPGPS_HANDLERS);
+typedef void (__stdcall *f_log_feedback)(device_feedback*);
 
 
 //Function signatures
-void log_feedback_sql(device_feedback* device_feeback);
+extern "C" __declspec(dllexport)  void log_feedback_sql(device_feedback* device_feeback);
 void log_feedback(device_feedback* device_feeback);
 
 //
@@ -46,7 +47,7 @@ void log_feedback(device_feedback* device_feeback) {
 	}
 }
 
-void log_feedback_sql(device_feedback* device_feeback) {
+extern "C" __declspec(dllexport)  void log_feedback_sql(device_feedback* device_feeback) {
 	//save the location details
 	try
 	{
@@ -126,9 +127,18 @@ int main()
 		cerr << p.stm_text << endl; // print out SQL that caused the error
 	}
 
+	//
+	HMODULE hInstance = GetModuleHandle(NULL);
+	f_log_feedback plog_feedback = (f_log_feedback)GetProcAddress(hInstance, "log_feedback_sql");
+	if (!plog_feedback) {
+		std::cout << "could not locate the function" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	//
 	handlers = (LPGPS_HANDLERS) malloc(sizeof(GPS_HANDLERS));
 	if (handlers != nullptr) {
-		handlers->log_feedback = log_feedback;
+		handlers->log_feedback = plog_feedback;
 		handlers->is_device_registered = is_device_registered;
 	}
 
@@ -143,10 +153,8 @@ int main()
 	GetCurrentDirectory(MAX_PATH, (LPWSTR)path);
 
 	HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
-	if (search_handle)
-	{
-		do
-		{
+	if (search_handle){
+		do{
 			//load each dynamically...
 			HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)std::wstring(L"services\\").append(file.cFileName).c_str());
 
