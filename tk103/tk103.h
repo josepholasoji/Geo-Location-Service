@@ -260,7 +260,7 @@ enum _command_message_enum
 };
 extern "C"
 {
-	TK103_API  gps* load(LPGPS_HANDLERS);
+	TK103_API  gps* __stdcall load(LPGPS_HANDLERS);
 }
 
 // This class is exported from the tk103.dll

@@ -1,16 +1,17 @@
-#include <zmq.h>
-#include <zmq_utils.h>
 #include <boost/asio.hpp>
 #include <memory>
 
 #include "server.h"
 #include "../sdk/sdk.h"
+#include "zmq.hpp"
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 #include <iostream>
 #include <sstream>
+#include <thread>
+#include <algorithm>
 
 #define OTL_ODBC 
 #define OTL_ANSI_CPP_11_NULLPTR_SUPPORT
@@ -27,15 +28,14 @@ typedef gps*(__stdcall *f_load)(LPGPS_HANDLERS);
 
 
 //Function signatures
-void log_feedback_sql(device_feedback* device_feeback);
 void log_feedback(device_feedback* device_feeback);
 
 //global variable declarations
 otl_connect db;
 const char dir_path[] = "./gps";
 LPGPS_HANDLERS handlers = nullptr;
-void *zmq_context;
-void *zmq_in_socket_handle, *zmq_out_socket_handle;
+zmq::socket_t* publisher = nullptr;
+
 
 //system wide functions
 void log_feedback(device_feedback* device_feeback) {
@@ -69,13 +69,7 @@ void log_feedback(device_feedback* device_feeback) {
 		std::string jsonString = oss.str();
 
 		//send a 0MQ message
-		zmq_msg_t msg;
-		int rc = zmq_msg_init_size(&msg, jsonString.length());
-		assert(rc == 0);
-		memcpy(zmq_msg_data(&msg), jsonString.c_str(), jsonString.length());
-		rc = zmq_sendmsg(zmq_in_socket_handle, &msg, 0);
-		zmq_msg_close(&msg);
-		//log_feedback_sql(device_feeback);
+		publisher->send(jsonString.c_str(), jsonString.size());
 	}
 	else if (data_store_selection == __data_store::MONGODB) {
 
@@ -85,69 +79,69 @@ void log_feedback(device_feedback* device_feeback) {
 	}
 }
 
-void log_feedback_sql() {
+void __cdecl start_feedbacklog_sql_job(void *vzmq_context) {
+
+	zmq::context_t* zmq_context = (zmq::context_t*)vzmq_context;
+
+	//connect the sucriber
+	zmq::socket_t* subscriber = new zmq::socket_t(*zmq_context, ZMQ_SUB);
+	subscriber->setsockopt(ZMQ_LINGER, 0);
+	subscriber->connect("tcp://localhost:5555");
+
+	//add subriction filter for feeback messages only
+	const char *filter = "";
+	subscriber->setsockopt(ZMQ_SUBSCRIBE, filter, strlen(filter));
 
 	while (true)
 	{
+		//recieve the 0MQ message
+		zmq::message_t update;
+		subscriber->recv(&update);
+		auto ddata = static_cast<const char*>(update.data());
+		//
+		ptree root;
+		std::string str(ddata, update.size());
+		boost::trim(str);
+		std::istringstream is(str);
+		read_json(is, root);
+
+		device_feedback *device_feeback = (device_feedback *)malloc(sizeof(device_feedback));
+		device_feeback->acc_ignition_on = root.get<double>("acc_ignition_on", 0);
+		strcpy_s(device_feeback->deviceId, sizeof(device_feeback->deviceId), root.get<std::string>("deviceId").c_str());
+		device_feeback->dlat = root.get<double>("dlat", 0);
+		device_feeback->dlon = root.get<double>("dlon", 0);
+		device_feeback->dmile_data = root.get<double>("dmile_data", 0);
+		device_feeback->dorientation = root.get<double>("dorientation", 0);
+		device_feeback->dspeed = root.get<double>("dspeed", 0);
+		device_feeback->main_power_switch_on = root.get<int>("main_power_switch_on", 0);
+
+		datetime* _datetime = (datetime *)malloc(sizeof(datetime));
+		_datetime->hour = root.get<int>("_dateTime.hour", 0);
+		_datetime->day = root.get<int>("_dateTime.day", 0);
+		_datetime->minute = root.get<int>("_dateTime.minute", 0);
+		_datetime->month = root.get<int>("_dateTime.month", 0);
+		_datetime->second = root.get<int>("_dateTime.second", 0);
+		_datetime->year = root.get<int>("_dateTime.year", 0);
+		device_feeback->_dateTime = _datetime;
+
+		//save the location details
+		otl_datetime _dateTime;
+		_dateTime.day = device_feeback->_dateTime->day;
+		_dateTime.month = device_feeback->_dateTime->month;
+		_dateTime.year = std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str());
+		_dateTime.hour = device_feeback->_dateTime->hour;
+		_dateTime.minute = device_feeback->_dateTime->minute;
+		_dateTime.second = device_feeback->_dateTime->second;
+
 		try
 		{
-			//connect the sucriber
-			void *context = zmq_ctx_new();
-			void *subscriber = zmq_socket(context, ZMQ_SUB);
-			int rc = zmq_connect(subscriber, "tcp://localhost:5555");
-			assert(rc == 0);
-			
-			//add subriction filter for feeback messages only
-			char *filter = "GPS_FEEDBACK_MEESAGE_SQL_COMMIT";
-			rc = zmq_setsockopt(subscriber, ZMQ_SUBSCRIBE, filter, strlen(filter));
-			assert(rc == 0);
-
-			//recieve the 0MQ message
-			zmq_msg_t msg;
-			rc = zmq_msg_init(&msg);
-
-			assert(rc == 0);
-			rc = zmq_recvmsg(subscriber, &msg, 0);
-
-			const char *data = (const char *)malloc(zmq_msg_size(&msg));
-			memcpy((void*)data, zmq_msg_data(&msg), zmq_msg_size(&msg));
-			assert(rc == 0);
-			zmq_msg_close(&msg);
-
 			//
-			ptree root(data);
-			device_feedback *device_feeback = (device_feedback *)malloc(sizeof(device_feedback));
-			device_feeback->acc_ignition_on = root.get<double>("acc_ignition_on", 0);
-			strcpy_s(device_feeback->deviceId, sizeof(device_feeback->deviceId) , root.get<std::string>("deviceId").c_str());
-			device_feeback->dlat = root.get<double>("dlat", 0);
-			device_feeback->dlon = root.get<double>("dlon", 0);
-			device_feeback->dmile_data = root.get<double>("dmile_data", 0);
-			device_feeback->dorientation = root.get<double>("dorientation", 0);
-			device_feeback->dspeed = root.get<double>("dspeed", 0);
-			device_feeback->main_power_switch_on = root.get<int>("main_power_switch_on", 0);
+			otl_connect _db;
+			_db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
 
-			datetime* _datetime = (datetime *)malloc(sizeof(datetime));
-			_datetime->hour = root.get<int>("_datetime.hour", 0);
-			_datetime->day = root.get<int>("_datetime.day", 0);
-			_datetime->minute = root.get<int>("_datetime.minute", 0);
-			_datetime->month = root.get<int>("_datetime.month", 0);
-			_datetime->second = root.get<int>("_datetime.second", 0);
-			_datetime->year= root.get<int>("_datetime.year", 0);
-			device_feeback->_dateTime = _datetime;
-
-			//save the location details
-			otl_datetime _dateTime;
-			_dateTime.day = device_feeback->_dateTime->day;
-			_dateTime.month = device_feeback->_dateTime->month;
-			_dateTime.year = std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str());
-			_dateTime.hour = device_feeback->_dateTime->hour;
-			_dateTime.minute = device_feeback->_dateTime->minute;
-			_dateTime.second = device_feeback->_dateTime->second;
-
-			//
 			otl_stream o(1,
 				"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
-				db);
+				_db);
 
 			o.set_commit(0);
 
@@ -196,13 +190,10 @@ bool is_device_registered(const char* deviceId) {
 
 int main()
 {
-
 	try
 	{
 		//start connection to sql db
-		otl_connect::otl_initialize();
-		std::string strConn = "DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;";
-		db.rlogon(strConn.c_str());
+		otl_connect::otl_initialize(1);
 
 		//Zero MQ version
 		int major, minor, patch;
@@ -210,9 +201,12 @@ int main()
 		printf("Current 0MQ version is %d.%d.%d\n", major, minor, patch);
 
 		//Start zero mq
-		void *zmq_context = zmq_ctx_new();
-		zmq_in_socket_handle = zmq_socket(zmq_context, ZMQ_PUB);
-		zmq_bind(zmq_in_socket_handle, "tcp://*:5555");
+		zmq::context_t* context = new zmq::context_t(1);
+		publisher = new zmq::socket_t(*context, ZMQ_PUB);
+		publisher->setsockopt(ZMQ_LINGER, 0);
+		publisher->bind("tcp://*:5555");
+
+		_beginthread(start_feedbacklog_sql_job, 1024, context);
 	}
 	catch (otl_exception& p)
 	{
@@ -226,13 +220,11 @@ int main()
 		cerr << ex.what() << endl; // print out SQL that caused the error
 	}
 
-	handlers = (LPGPS_HANDLERS) malloc(sizeof(GPS_HANDLERS));
+	handlers = (LPGPS_HANDLERS)malloc(sizeof(GPS_HANDLERS));
 	if (handlers != nullptr) {
 		handlers->log_feedback = log_feedback;
 		handlers->is_device_registered = is_device_registered;
 	}
-
-
 
 	//Search the plugins directory for service plugins
 	WIN32_FIND_DATA file = { 0 };
@@ -243,8 +235,8 @@ int main()
 	auto  gpses = std::make_shared<std::vector<gps*>>();
 
 	HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
-	if (search_handle){
-		do{
+	if (search_handle) {
+		do {
 			//load each dynamically...
 			HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)std::wstring(L"services\\").append(file.cFileName).c_str());
 
@@ -264,7 +256,7 @@ int main()
 		} while (FindNextFile(search_handle, &file));
 		FindClose(search_handle);
 	}
-			
+
 	boost::asio::io_service io_service;
 	std::vector<server> servers;
 
@@ -277,11 +269,11 @@ int main()
 	io_service.run();
 
 	//prepare of exit
-	auto on_exit = []{
+	auto on_exit = [] {
 		db.logoff();
 		free((void*)handlers);
 	};
 
-	atexit(on_exit);	
+	atexit(on_exit);
 	return 0;
 }
