@@ -81,6 +81,9 @@ void log_feedback(device_feedback* device_feeback) {
 
 void __cdecl start_feedbacklog_sql_job(void *vzmq_context) {
 
+	otl_connect _db;
+	_db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
+
 	zmq::context_t* zmq_context = (zmq::context_t*)vzmq_context;
 
 	//connect the sucriber
@@ -136,9 +139,6 @@ void __cdecl start_feedbacklog_sql_job(void *vzmq_context) {
 		try
 		{
 			//
-			otl_connect _db;
-			_db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
-
 			otl_stream o(1,
 				"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
 				_db);
@@ -193,7 +193,8 @@ int main()
 	try
 	{
 		//start connection to sql db
-		otl_connect::otl_initialize(1);
+		otl_connect::otl_initialize(1);		
+		db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
 
 		//Zero MQ version
 		int major, minor, patch;
