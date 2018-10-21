@@ -13,6 +13,14 @@
 #include <thread>
 #include <algorithm>
 
+#if defined(_MSC_VER)
+#else
+	#include <dlfcn.h>
+	#include <dirent.h>
+#endif // defined(WINDOW) && (_MSC_VER)
+
+
+
 #define OTL_ODBC 
 #define OTL_ANSI_CPP_11_NULLPTR_SUPPORT
 #define OTL_ODBC_SELECT_STM_EXECUTE_BEFORE_DESCRIBE
@@ -27,8 +35,8 @@ using boost::property_tree::ptree;
 	typedef int(__stdcall *f_funci)();
 	typedef LPGPS (__stdcall *f_load)(LPGPS_HANDLERS);
 #else
-	typedef int ( f_funci)();
-	typedef LPGPS ( f_load)(LPGPS_HANDLERS);
+	typedef int ( *f_funci)();
+	typedef LPGPS ( *f_load)(LPGPS_HANDLERS);
 #endif // defined(WINDOW) && (_MSC_VER)
 
 //Function signatures
@@ -126,7 +134,7 @@ start_feedbacklog_sql_job(void *vzmq_context) {
 #if defined(_MSC_VER)
 		strcpy_s(device_feeback->deviceId, sizeof(device_feeback->deviceId), root.get<std::string>("deviceId").c_str());
 #else
-		strcpy(device_feeback->deviceId, root.get<std::string>("deviceId").c_str())
+		strcpy(device_feeback->deviceId, root.get<std::string>("deviceId").c_str());
 #endif // defined(WINDOW) && (_MSC_VER)
 
 		device_feeback->dlat = root.get<double>("dlat", 0);
@@ -284,11 +292,12 @@ int main()
 
 	#else
 
-		n = scandir("services\\*.gps", &namelist, 0, alphasort);
+		struct dirent **namelist;
+		int n = scandir("services\\*.gps", &namelist, 0, alphasort);
 		if (n < 0)
 			perror("scandir");
 		else {
-			for (i = 0; i < n; i++) {
+			for (int i = 0; i < n; i++) {
 				void* handle = dlopen(std::string("services\\").append(namelist[i]->d_name).c_str(), RTLD_LAZY);
 				if (!handle) {
 					cerr << "Cannot open library: " << dlerror() << '\n';
@@ -297,7 +306,7 @@ int main()
 
 				// reset errors
 				dlerror();
-				f_load load = (hello_t)dlsym(handle, "load");
+				f_load load = (f_load)dlsym(handle, "load");
 				const char *dlsym_error = dlerror();
 				if (dlsym_error) {
 					cerr << "Cannot load symbol 'hello': " << dlsym_error <<

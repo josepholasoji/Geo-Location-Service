@@ -86,6 +86,7 @@
     <IncludePath>C:\linuxdev\usr\include\c++\4.8.2;C:\linuxdev\usr\include;C:\linuxdev\opt\boost\include;C:\linuxdev;$(IncludePath)</IncludePath>
     <AdditionalSourcesToCopyMapping>
     </AdditionalSourcesToCopyMapping>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="..\geo_location\geo_location_svc.cpp" />
@@ -107,7 +108,14 @@
     <ClInclude Include="..\sdk\sdk.h" />
     <ClInclude Include="..\sdk\Utils.h" />
   </ItemGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <LibraryDependencies>zmq;odbc;odbccr;pthread;dl</LibraryDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>
