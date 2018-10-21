@@ -10635,9 +10635,10 @@ OTL_ODBC_SQL_EXTENDED_FETCH_ON is defined
 // in case it's ODBC for Windows (!OTL_ODBC_UNIX), and windows.h is
 // not included yet (_WINDOWS_ not defined yet), then include the file
 // explicitly
-#if !defined(OTL_ODBC_UNIX) && !defined(_WINDOWS_)
+#if !defined(otl_odbc_unix) && !defined(_windows_) && defined(_MSC_VER)
 #include <windows.h>
 #endif
+
 
 #if defined(OTL_ODBC_UNIX) && defined(OTL_INFORMIX_CLI_64_BIT)
 #include <infxsql.h>

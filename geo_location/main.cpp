@@ -23,9 +23,13 @@ using namespace std;
 using boost::property_tree::ptree;
 
 
-typedef int(__stdcall *f_funci)();
-typedef gps*(__stdcall *f_load)(LPGPS_HANDLERS);
-
+#if defined(_MSC_VER)
+	typedef int(__stdcall *f_funci)();
+	typedef LPGPS (__stdcall *f_load)(LPGPS_HANDLERS);
+#else
+	typedef int ( f_funci)();
+	typedef LPGPS ( f_load)(LPGPS_HANDLERS);
+#endif // defined(WINDOW) && (_MSC_VER)
 
 //Function signatures
 void log_feedback(device_feedback* device_feeback);
@@ -36,6 +40,7 @@ const char dir_path[] = "./gps";
 LPGPS_HANDLERS handlers = nullptr;
 zmq::socket_t* publisher = nullptr;
 
+//You are looking for dlopen(analogous to LoadLibrary), dlclose(analogous to FreeLibrary) and dlsym(analogous to GetProcAddress).
 
 //system wide functions
 void log_feedback(device_feedback* device_feeback) {
@@ -79,7 +84,14 @@ void log_feedback(device_feedback* device_feeback) {
 	}
 }
 
-void __cdecl start_feedbacklog_sql_job(void *vzmq_context) {
+void  
+#if defined(_MSC_VER)
+	__cdecl
+#else
+
+#endif // defined(WINDOW) && (_MSC_VER)
+
+start_feedbacklog_sql_job(void *vzmq_context) {
 
 	otl_connect _db;
 	_db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
@@ -110,7 +122,13 @@ void __cdecl start_feedbacklog_sql_job(void *vzmq_context) {
 
 		device_feedback *device_feeback = (device_feedback *)malloc(sizeof(device_feedback));
 		device_feeback->acc_ignition_on = root.get<double>("acc_ignition_on", 0);
+
+#if defined(_MSC_VER)
 		strcpy_s(device_feeback->deviceId, sizeof(device_feeback->deviceId), root.get<std::string>("deviceId").c_str());
+#else
+		strcpy(device_feeback->deviceId, root.get<std::string>("deviceId").c_str())
+#endif // defined(WINDOW) && (_MSC_VER)
+
 		device_feeback->dlat = root.get<double>("dlat", 0);
 		device_feeback->dlon = root.get<double>("dlon", 0);
 		device_feeback->dmile_data = root.get<double>("dmile_data", 0);
@@ -207,7 +225,11 @@ int main()
 		publisher->setsockopt(ZMQ_LINGER, 0);
 		publisher->bind("tcp://*:5555");
 
+#if defined(_MSC_VER)
 		_beginthread(start_feedbacklog_sql_job, 1024, context);
+#else
+
+#endif // defined(WINDOW) && (_MSC_VER)
 	}
 	catch (otl_exception& p)
 	{
@@ -227,36 +249,70 @@ int main()
 		handlers->is_device_registered = is_device_registered;
 	}
 
-	//Search the plugins directory for service plugins
-	WIN32_FIND_DATA file = { 0 };
-	char path[MAX_PATH] = { 0 };
-	GetCurrentDirectory(MAX_PATH, (LPWSTR)path);
-
 	//
 	auto  gpses = std::make_shared<std::vector<gps*>>();
 
-	HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
-	if (search_handle) {
-		do {
-			//load each dynamically...
-			HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)std::wstring(L"services\\").append(file.cFileName).c_str());
+	#if defined(_MSC_VER)
 
-			if (!hGetProcIDDLL) {
-				std::cout << "could not load the GPS service file" << std::endl;
-				return EXIT_FAILURE;
+		//Search the plugins directory for service plugins
+		WIN32_FIND_DATA file = { 0 };
+		char path[MAX_PATH] = { 0 };
+		GetCurrentDirectory(MAX_PATH, (LPWSTR)path);
+
+		HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
+		if (search_handle) {
+			do {
+				//load each dynamically...
+				HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)std::wstring(L"services\\").append(file.cFileName).c_str());
+
+				if (!hGetProcIDDLL) {
+					std::cout << "could not load the GPS service file" << std::endl;
+					return EXIT_FAILURE;
+				}
+
+				// resolve function address here
+				f_load load = (f_load)GetProcAddress(hGetProcIDDLL, "load");
+				if (!load) {
+					std::cout << "could not locate the function" << std::endl;
+					return EXIT_FAILURE;
+				}
+
+				gpses->push_back(load(handlers));
+			} while (FindNextFile(search_handle, &file));
+			FindClose(search_handle);
+		}
+
+	#else
+
+		n = scandir("services\\*.gps", &namelist, 0, alphasort);
+		if (n < 0)
+			perror("scandir");
+		else {
+			for (i = 0; i < n; i++) {
+				void* handle = dlopen(std::string("services\\").append(namelist[i]->d_name).c_str(), RTLD_LAZY);
+				if (!handle) {
+					cerr << "Cannot open library: " << dlerror() << '\n';
+					return 1;
+				}
+
+				// reset errors
+				dlerror();
+				f_load load = (hello_t)dlsym(handle, "load");
+				const char *dlsym_error = dlerror();
+				if (dlsym_error) {
+					cerr << "Cannot load symbol 'hello': " << dlsym_error <<
+						'\n';
+					dlclose(handle);
+					return 1;
+				}
+
+				gpses->push_back(load(handlers));
+				free(namelist[i]);
 			}
+		}
 
-			// resolve function address here
-			f_load load = (f_load)GetProcAddress(hGetProcIDDLL, "load");
-			if (!load) {
-				std::cout << "could not locate the function" << std::endl;
-				return EXIT_FAILURE;
-			}
-
-			gpses->push_back(load(handlers));
-		} while (FindNextFile(search_handle, &file));
-		FindClose(search_handle);
-	}
+		free(namelist);
+	#endif // defined(WINDOW) && (_MSC_VER)
 
 	boost::asio::io_service io_service;
 	std::vector<server> servers;

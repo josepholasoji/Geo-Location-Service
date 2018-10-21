@@ -1,4 +1,6 @@
-#pragma once
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+# pragma once
+#endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 //
 // async_tcp_echo_server.cpp
@@ -16,8 +18,8 @@
 #include <utility>
 #include <boost/asio.hpp>
 #include "session.h"
-#include <zmq.h>
-#include <zmq_utils.h>
+//#include <zmq.h>
+//#include <zmq_utils.h>
 
 using boost::asio::ip::tcp;
 

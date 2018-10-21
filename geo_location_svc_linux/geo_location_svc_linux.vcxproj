@@ -35,41 +35,47 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{cfc11c0d-e6fa-444a-80e4-931d811f2e76}</ProjectGuid>
+    <ProjectGuid>{8f563c51-d84b-4110-bbf4-46af70e536e2}</ProjectGuid>
     <Keyword>Linux</Keyword>
-    <RootNamespace>linux_service</RootNamespace>
+    <RootNamespace>geo_location_svc_linux</RootNamespace>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <ApplicationType>Linux</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
     <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
-    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
-    <ProjectName>geo_location_svc_linux</ProjectName>
+    <LinuxProjectType>{FC1A4D80-50E9-41DA-9192-61C0DBAA00D2}</LinuxProjectType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
-    <RemoteRootDir>~/projects/geo_location_svc</RemoteRootDir>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -77,13 +83,9 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\SUPER\Programming\Applications\Geo-Location-Service\include;/boost_1_68_0/;$(IncludePath)</IncludePath>
-    <LibraryPath>/boost_1_68_0/libs;C:\SUPER\Programming\Applications\Geo-Location-Service\lib;$(LibraryPath)</LibraryPath>
-    <LocalRemoteCopySources>true</LocalRemoteCopySources>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\boost_1_65_1;C:\Program Files\ZeroMQ 4.0.4\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\boost_1_65_1\stage\x64\lib;C:\Program Files\ZeroMQ 4.0.4\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\linuxdev\usr\include\c++\4.8.2;C:\linuxdev\usr\include;C:\linuxdev\opt\boost\include;C:\linuxdev;$(IncludePath)</IncludePath>
+    <AdditionalSourcesToCopyMapping>
+    </AdditionalSourcesToCopyMapping>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="..\geo_location\geo_location_svc.cpp" />
@@ -91,9 +93,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\geo_location\geo_location_svc.h" />
+    <ClInclude Include="..\geo_location\otlv4.h" />
     <ClInclude Include="..\geo_location\server.h" />
     <ClInclude Include="..\geo_location\session.h" />
     <ClInclude Include="..\geo_location\Utils.h" />
+    <ClInclude Include="..\geo_location\zmq.hpp" />
+    <ClInclude Include="..\include\zmq.h" />
+    <ClInclude Include="..\include\zmq_utils.h" />
+    <ClInclude Include="..\sdk\data_downstream.h" />
+    <ClInclude Include="..\sdk\data_payload_from_device.h" />
+    <ClInclude Include="..\sdk\dms.h" />
+    <ClInclude Include="..\sdk\gps.h" />
+    <ClInclude Include="..\sdk\sdk.h" />
+    <ClInclude Include="..\sdk\Utils.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
