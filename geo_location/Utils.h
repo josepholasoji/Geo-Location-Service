@@ -5,7 +5,7 @@ class Utils
 public:
 	Utils();
 	~Utils();
-	void* Utils::detectDevice(char*, int);
+	void* detectDevice(char*, int);
 };
 
 

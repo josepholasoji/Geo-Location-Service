@@ -1,11 +1,13 @@
-#pragma once
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+# pragma once
+#endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
+
 #include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <utility>
 #include <boost/asio.hpp>
-#include <zmq.h>
-#include <zmq_utils.h>
+//#include "zmq.h"
 #include <thread>
 #include "../sdk/gps.h"
 #include "Utils.h"
@@ -19,9 +21,9 @@ class session
 	: public std::enable_shared_from_this<session>
 {
 public:
-	session(tcp::socket socket, gps* _gps)
+	session(tcp::socket socket, LPGPS _gps)
 		: socket_(std::move(socket)),
-		_gps(_gps)
+		gps(_gps)
 	{
 		memset(this->buff, 0, max_length);
 	}
@@ -35,12 +37,14 @@ private:
 	void do_read()
 	{
 		auto self(shared_from_this());
+
+		memset(data_, 0, max_length);
 		socket_.async_read_some(boost::asio::buffer(data_, max_length),
 		[this, self](boost::system::error_code ec, std::size_t length)
 		{
 			if (!ec)
 			{
-				int remaining_bytes_size = strlen(this->buff),
+				size_t remaining_bytes_size = strlen(this->buff),
 				    total_new_length = remaining_bytes_size + length;
 
 				unsigned char* new_bytes = new unsigned char[total_new_length];
@@ -51,9 +55,13 @@ private:
 				char* _temp = this->buff;
 				_temp += strlen(this->buff); 
 				int write_index = 0;
-				for (int write_index = 0, read_pointer = 0; read_pointer < total_new_length; read_pointer++, write_index++)
+				for (int read_pointer = 0; read_pointer < total_new_length; read_pointer++)
 				{					
+					write_index = write_index < 1 ? 0 : write_index;
+
 					_temp[write_index] = new_bytes[read_pointer];
+					write_index++;
+
 					if (new_bytes[read_pointer] == ')')
 					{
 						//detect hardware
@@ -62,21 +70,21 @@ private:
 						//Process the data
 						std::string s = std::string(this->buff);
 						boost::trim(s);
-						auto output = _gps->process((char*)s.c_str(), max_length);
+						std::string output = gps->process((const char*)s.c_str(), max_length);
 
-						//write out the output tot device
-						boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)output.c_str(), output.length()),
-							[this, self](boost::system::error_code ec, std::size_t /*length*/)
-						{
-							if (!ec){}
-						});
-
+						if (output.length() > 0) {
+							//write out the output tot device
+							boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)output.c_str(), output.length()),
+								[this, self](boost::system::error_code ec, std::size_t /*length*/)
+							{
+								if (!ec) {}
+							});
+						}
 
 						//After processing clear buffer
-						memset(this->buff, 0, max_length);
-
 						_temp = buff;
-						write_index = -1;
+						memset(this->buff, 0, max_length);
+						write_index = 0;
 					}
 				}
 
@@ -86,10 +94,10 @@ private:
 		});
 	}
 
-	gps* _gps = nullptr;
+	LPGPS gps = nullptr;
 	tcp::socket socket_;
 	enum { max_length = 1024 };
-	char data_[max_length];
+	char data_[max_length] = { 0 };
     char buff[max_length] = { 0 };
 	std::shared_ptr<boost::asio::mutable_buffer> left_over_bytes;
 };

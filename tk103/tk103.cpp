@@ -6,28 +6,27 @@
 #include "..\sdk\data_payload_from_device.h"
 #include "..\sdk\data_downstream.h"
 #include <thread>
-#include <zmq.h>
-#include <zmq_utils.h>
 #include <memory>
 #include <boost/chrono.hpp>
 #include "..\sdk\Utils.h"
-#include "..\sdk\otlv4.h"
 
 
 // This is an example of an exported function.
- TK103_API gps*__stdcall load()
+TK103_API gps*__stdcall load(LPGPS_HANDLERS handlers)
 {
-	gps* _gps =  new Ctk103();
+	gps* _gps = new Ctk103(handlers);
 	return _gps;
 }
 
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103()
+Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
 {
+	this->handlers = _handlers;
+
 	device_command_message = {
-	    { "AP00" ,{ "AP00","One time calling message 3.1.5","Device parameter message",_command_message_enum::AP00 } },
+		{ "AP00" ,{ "AP00","One time calling message 3.1.5","Device parameter message",_command_message_enum::AP00 } },
 		{ "AP01" ,{ "AP01","Response handshake signal message 3.1.1","Device parameter message",_command_message_enum::AP01 } },
 		{ "AP03" ,{ "AP03","Read device parameter configuring message","Device parameter message",_command_message_enum::AP03 } },
 		{ "AP04" ,{ "AP04","Read device operated status message","Device parameter message",_command_message_enum::AP04 } },
@@ -88,14 +87,15 @@ Ctk103::Ctk103()
 	};
 
 	//Subscribe to the 
-	zmq_context = zmq_ctx_new();
-	zmq_in_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
-	zmq_bind(zmq_in_socket_handle, "tcp://*:5555");
+	//zmq_context = zmq_ctx_new();
+	//zmq_in_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
+	//zmq_bind(zmq_in_socket_handle, "tcp://*:5555");
 
-    return;
+	_gps_service.set_handlers(this->handlers);
+	return;
 }
 
-std::string Ctk103::process(char *data, int size)
+const char* Ctk103::process(const char *data, int size)
 {
 	struct _command_message msg = { 0 };
 	data_payload_from_device* deviceData = nullptr;
@@ -104,139 +104,139 @@ std::string Ctk103::process(char *data, int size)
 	deviceData = std::get<0>(parsedData);
 	switch (std::get<1>(parsedData).type)
 	{
-	case _command_message_enum::AP00:
+		case _command_message_enum::AP00:
+			break;
+		case _command_message_enum::AP01:
+			break;
+		case _command_message_enum::AP03:
+			break;
+		case _command_message_enum::AP04:
+			break;
+		case _command_message_enum::AP05:
+			break;
+		case _command_message_enum::AP07:
+			break;
+		case _command_message_enum::AP11:
+			break;
+		case _command_message_enum::AP12:
+			break;
+		case _command_message_enum::AP15:
+			break;
+		case _command_message_enum::AP17:
+			break;
+		case _command_message_enum::AQ00:
+			break;
+		case _command_message_enum::AQ01:
+			break;
+		case _command_message_enum::AQ02:
+			break;
+		case _command_message_enum::AQ03:
+			break;
+		case _command_message_enum::AQ04:
+			break;
+		case _command_message_enum::AR00:
+			break;
+		case _command_message_enum::AR01:
+			break;
+		case _command_message_enum::AR05:
+			break;
+		case _command_message_enum::AR06:
+			break;
+		case _command_message_enum::AS01:
+			break;
+		case _command_message_enum::AS07:
+			break;
+		case _command_message_enum::AT00:
+			break;
+		case _command_message_enum::AV00:
+			break;
+		case _command_message_enum::AV01:
+			break;
+		case _command_message_enum::AV02:
+			break;
+		case _command_message_enum::AV03:
+			break;
+		case _command_message_enum::AX00:
+			break;
+		case _command_message_enum::AX01:
+			break;
+		case _command_message_enum::AX02:
+			break;
+		case _command_message_enum::AX03:
+			break;
+		case _command_message_enum::AX04:
+			break;
+		case _command_message_enum::AX05:
+			break;
+		case _command_message_enum::BO01:
+			break;
+		case _command_message_enum::BP00: //Device handshake...
+		{
+			return _gps_service.deviceHandshake(deviceData);
+		}
 		break;
-	case _command_message_enum::AP01:
+		case _command_message_enum::BP02:
+			break;
+		case _command_message_enum::BP03:
+			break;
+		case _command_message_enum::BP04:
+			break;
+		case _command_message_enum::BP05: //Device login message
+		{
+			return _gps_service.deviceLogin(deviceData);
+		}
 		break;
-	case _command_message_enum::AP03:
+		case _command_message_enum::BP12:
+			break;
+		case _command_message_enum::BP07:
+			break;
+		case _command_message_enum::BR00://Device feedbac message
+		{
+			return _gps_service.deviceFeedback(deviceData);
+		}
 		break;
-	case _command_message_enum::AP04:
-		break;
-	case _command_message_enum::AP05:
-		break;
-	case _command_message_enum::AP07:
-		break;
-	case _command_message_enum::AP11:
-		break;
-	case _command_message_enum::AP12:
-		break;
-	case _command_message_enum::AP15:
-		break;
-	case _command_message_enum::AP17:
-		break;
-	case _command_message_enum::AQ00:
-		break;
-	case _command_message_enum::AQ01:
-		break;
-	case _command_message_enum::AQ02:
-		break;
-	case _command_message_enum::AQ03:
-		break;
-	case _command_message_enum::AQ04:
-		break;
-	case _command_message_enum::AR00:
-		break;
-	case _command_message_enum::AR01:
-		break;
-	case _command_message_enum::AR05:
-		break;
-	case _command_message_enum::AR06:
-		break;
-	case _command_message_enum::AS01:
-		break;
-	case _command_message_enum::AS07:
-		break;
-	case _command_message_enum::AT00:
-		break;
-	case _command_message_enum::AV00:
-		break;
-	case _command_message_enum::AV01:
-		break;
-	case _command_message_enum::AV02:
-		break;
-	case _command_message_enum::AV03:
-		break;
-	case _command_message_enum::AX00:
-		break;
-	case _command_message_enum::AX01:
-		break;
-	case _command_message_enum::AX02:
-		break;
-	case _command_message_enum::AX03:
-		break;
-	case _command_message_enum::AX04:
-		break;
-	case _command_message_enum::AX05:
-		break;
-	case _command_message_enum::BO01:
-		break;
-	case _command_message_enum::BP00: //Device handshake...
-	{
-		return _gps_service.deviceHandshake(deviceData);
-	}
-	break;
-	case _command_message_enum::BP02:
-		break;
-	case _command_message_enum::BP03:
-		break;
-	case _command_message_enum::BP04:
-		break;
-	case _command_message_enum::BP05: //Device login message
-	{
-		return _gps_service.deviceLogin(deviceData);
-	}
-	break;
-	case _command_message_enum::BP12:
-		break;
-	case _command_message_enum::BP07:
-		break;
-	case _command_message_enum::BR00://Device feedbac message
-	{
-		return _gps_service.deviceFeedback(deviceData);
-	}
-	break;
-	case _command_message_enum::BR01:
-		break;
-	case _command_message_enum::BR02: {
-		return _gps_service.deviceFeedbackEnding(deviceData);
-	}
-	break;
-	case _command_message_enum::BR05:
-		break;
-	case _command_message_enum::BR06:
-		break;
-	case _command_message_enum::BS04:
-		break;
-	case _command_message_enum::BS05:
-		break;
-	case _command_message_enum::BS06:
-		break;
-	case _command_message_enum::BS08:
-		break;
-	case _command_message_enum::BS09:
-		break;
-	case _command_message_enum::BS20:
-		break;
-	case _command_message_enum::BS21:
-		break;
-	case _command_message_enum::BS23:
-		break;
-	case _command_message_enum::BT00:
-		break;
-	case _command_message_enum::BU00:
-		break;
-	case _command_message_enum::BV00:
-		break;
-	case _command_message_enum::BV01:
-		break;
-	case _command_message_enum::BV02:
-		break;
-	default: {
+		case _command_message_enum::BR01:
+			break;
+		case _command_message_enum::BR02: {
+			return _gps_service.deviceFeedbackEnding(deviceData);
+		}
+										  break;
+		case _command_message_enum::BR05:
+			break;
+		case _command_message_enum::BR06:
+			break;
+		case _command_message_enum::BS04:
+			break;
+		case _command_message_enum::BS05:
+			break;
+		case _command_message_enum::BS06:
+			break;
+		case _command_message_enum::BS08:
+			break;
+		case _command_message_enum::BS09:
+			break;
+		case _command_message_enum::BS20:
+			break;
+		case _command_message_enum::BS21:
+			break;
+		case _command_message_enum::BS23:
+			break;
+		case _command_message_enum::BT00:
+			break;
+		case _command_message_enum::BU00:
+			break;
+		case _command_message_enum::BV00:
+			break;
+		case _command_message_enum::BV01:
+			break;
+		case _command_message_enum::BV02:
+			break;
+		default: {
 
-	}
+		}
 	}
 
-	return {};
+	return "";
 }
 
 Ctk103::~Ctk103()
@@ -283,31 +283,31 @@ void Ctk103::status()
 
 unsigned char* Ctk103::read()
 {
-	zmq_msg_t msg;
-	int rc = zmq_msg_init(&msg);
+	//zmq_msg_t msg;
+	//int rc = zmq_msg_init(&msg);
 
-	assert(rc == 0);
-	rc = zmq_recvmsg(zmq_in_socket_handle, &msg, 0);
+	//assert(rc == 0);
+	//rc = zmq_recvmsg(zmq_in_socket_handle, &msg, 0);
 
-	std::shared_ptr<data_downstream> ds = std::make_shared<data_downstream>();
-	memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
+	//std::shared_ptr<data_downstream> ds = std::make_shared<data_downstream>();
+	//memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
 
-	assert(rc == 0);
-	zmq_msg_close(&msg);
+	//assert(rc == 0);
+	//zmq_msg_close(&msg);
 	return 0;
 }
 
 int Ctk103::write(unsigned char* ch, int size)
 {
-	zmq_msg_t msg;
-	int rc = zmq_msg_init_size(&msg, size);
-	assert(rc == 0);
-	memcpy(zmq_msg_data(&msg), ch, size);
-	rc = zmq_sendmsg(zmq_out_socket_handle, &msg, 0);
+	//zmq_msg_t msg;
+	//int rc = zmq_msg_init_size(&msg, size);
+	//assert(rc == 0);
+	//memcpy(zmq_msg_data(&msg), ch, size);
+	//rc = zmq_sendmsg(zmq_out_socket_handle, &msg, 0);
 	return 0;
 }
 
-TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::parseDeviceRequest(char* ch)
+TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::parseDeviceRequest(const char* ch)
 {
 	data_payload_from_device* in_data = (data_payload_from_device *)(ch);
 

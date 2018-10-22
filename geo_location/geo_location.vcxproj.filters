@@ -29,10 +29,16 @@
     <ClInclude Include="server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="session.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="otlv4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="zmq.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

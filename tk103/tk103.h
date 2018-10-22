@@ -24,6 +24,7 @@
 #include <boost/asio.hpp>
 #include <tuple>
 #include "gps_service.h"
+#include "..\sdk\sdk.h"
 
 //Miscs
 #define GPScharsToString(x) std::string((char*)&x, sizeof(x))
@@ -259,7 +260,7 @@ enum _command_message_enum
 };
 extern "C"
 {
-	TK103_API  gps* load();
+	TK103_API  gps* __stdcall load(LPGPS_HANDLERS);
 }
 
 // This class is exported from the tk103.dll
@@ -271,13 +272,15 @@ public:
 	std::string deviceId;
 	gps_service _gps_service;
 
-	Ctk103();
+	LPGPS_HANDLERS handlers;
+
+	Ctk103(LPGPS_HANDLERS);
 	~ Ctk103();
 
 	//
 	unsigned char* read();
 	int write(unsigned char* ch, int size);
-	TK103_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(char* ch);
+	TK103_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(const char* ch);
 
 	void *zmq_context;
 	void *zmq_in_socket_handle, *zmq_out_socket_handle;
@@ -292,7 +295,7 @@ public:
 	// Inherited via gps
 	virtual gps * detect(char *, int) override;
 
-	virtual std::string process(char *data, int size);
+	virtual const char* process(const char *data, int size);
 
 	// Inherited via gps
 	virtual int serverPort() override;

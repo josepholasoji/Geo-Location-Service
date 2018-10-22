@@ -9,40 +9,30 @@ using namespace std;
 gps_service::gps_service()
 {
 	deviceId = std::string("123456");
-	otl_connect::otl_initialize();
-
-	try
-	{
-		std::string strConn = "DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;";
-		this->db.rlogon(strConn.c_str());
-	}
-	catch (otl_exception& p)
-	{
-		cerr << p.msg << endl; // print out error message
-		cerr << p.code << endl; // print out error code
-		cerr << p.var_info << endl; // print out the variable that caused the error
-		cerr << p.sqlstate << endl; // print out SQLSTATE message
-		cerr << p.stm_text << endl; // print out SQL that caused the error
-	}
+	this->handlers = nullptr;
 }
 
 
 gps_service::~gps_service()
 {
-	db.logoff();
+ 
 }
 
-std::string gps_service::deviceLogin(data_payload_from_device*  deviceData)
+const char* gps_service::deviceLogin(data_payload_from_device*  deviceData)
 {
+	char * output = (char*)malloc(1024);
+	memset((void*)output, 0, 1024);
+
 	std::string id(deviceData->_LOGIN_MESSAGE.id, sizeof(deviceData->_LOGIN_MESSAGE.id));
 	std::string deviceId(deviceData->_LOGIN_MESSAGE.device_id, sizeof(deviceData->_LOGIN_MESSAGE.device_id));
 
 	//Get list of configured devices...
-	bool isAKnownDevice = this->isDeviceDefined(deviceId);
+	bool isAKnownDevice = this->handlers->is_device_registered(deviceId.c_str());
 	if (isAKnownDevice)
 	{
 		this->deviceId = deviceId;
-		std::string output = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
+		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
+		strcpy_s(output, 1024, o.c_str());
 		return output;
 	}
 	else
@@ -52,30 +42,7 @@ std::string gps_service::deviceLogin(data_payload_from_device*  deviceData)
 
 }
 
-bool gps_service::isDeviceDefined(std::string id) {
-	try {
-		int is_device_registered = 0;
-		otl_stream o(1, "{call find_device(:device_id<char[20],in>, @registered)}", this->db);
-		o.set_commit(0);
-		o << id.c_str();
-
-		//read all the outut...
-		otl_stream s(1, "select @registered  :#1<int>", db, otl_implicit_select);
-		s >> is_device_registered;
-		return is_device_registered > 0;
-	}
-	catch (otl_exception& p) {
-		cerr << p.msg << endl; // print out error message
-		cerr << p.code << endl; // print out error code
-		cerr << p.var_info << endl; // print out the variable that caused the error
-		cerr << p.sqlstate << endl; // print out SQLSTATE message
-		cerr << p.stm_text << endl; // print out SQL that caused the error
-	}
-
-	return false;
-}
-
-std::string gps_service::deviceFeedback(data_payload_from_device*  deviceData)
+const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 {
 	std::string dataAvailable = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.dataAvailable);
 	if (dataAvailable._Equal("A")) {
@@ -94,15 +61,6 @@ std::string gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 
 		//We sql server timestamp format - YYYY-MM-DD HH:MI:SS
 		std::string timeStamp = "20" + GPScharsToString(date.year) + "-" + GPScharsToString(date.month) + "-" + GPScharsToString(date.day) + " " + GPScharsToString(time.hh) + ":" + GPScharsToString(time.mm) + ":" + GPScharsToString(time.ss);
-		otl_datetime _dateTime;
-		_dateTime.day = std::atoi(GPScharsToString(date.day).c_str());
-		_dateTime.month = std::atoi(GPScharsToString(date.month).c_str());
-
-		
-		_dateTime.year = std::atoi(std::string("20" + GPScharsToString(date.year)).c_str());
-		_dateTime.hour = std::atoi(GPScharsToString(time.hh).c_str());
-		_dateTime.minute = std::atoi(GPScharsToString(time.mm).c_str());
-		_dateTime.second = std::atoi(GPScharsToString(time.ss).c_str());
 
 		//std::string datetime = Utils::makeDateTimeFromGPSData(date, time);
 		std::string id = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.id);
@@ -130,42 +88,36 @@ std::string gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
+		device_feedback *feedback = (device_feedback *) malloc(sizeof(device_feedback));
+		feedback->acc_ignition_on = acc_ignition_on;
+		strcpy_s(feedback->deviceId, this->deviceId.c_str());
+		feedback->dlat = dlat;
+		feedback->dlon = dlon;
+		feedback->dmile_data = dmile_data;
+		feedback->dorientation = dorientation;
+		feedback->dspeed = dspeed;
+		feedback->main_power_switch_on = main_power_switch_on;
 
-		//save the location details
-		try
-		{
-			int is_device_registered = 0;
-			otl_stream o(1, 
-				"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
-				this->db);
+		datetime* __datetime = (datetime *)malloc(sizeof(datetime));
+		__datetime->day = std::atoi(GPScharsToString(date.day).c_str());
+		__datetime->month = std::atoi(GPScharsToString(date.month).c_str());
+		__datetime->year = std::atoi(GPScharsToString(date.year).c_str());
 
-			//o.set_commit(0);
+		__datetime->hour = std::atoi(GPScharsToString(time.hh).c_str());
+		__datetime->minute = std::atoi(GPScharsToString(time.mm).c_str());
+		__datetime->second = std::atoi(GPScharsToString(time.ss).c_str());
 
-			o << _dateTime
-			  << dlat 
-			  << dlon 
-			  << this->deviceId.c_str() 
-			  << dorientation 
-		      << dspeed 
-			  << (main_power_switch_on ? 1 : 0)
-			  << (acc_ignition_on ? 1 : 0)
-			  << (double) dmile_data;
-		}
-		catch (otl_exception& p) {
-			cerr << p.msg << endl; // print out error message
-			cerr << p.code << endl; // print out error code
-			cerr << p.var_info << endl; // print out the variable that caused the error
-			cerr << p.sqlstate << endl; // print out SQLSTATE message
-			cerr << p.stm_text << endl; // print out SQL that caused the error
-		}
+		feedback->_dateTime = __datetime;
+
+		this->handlers->log_feedback(feedback);
+		free((void*)feedback->_dateTime);
+		free((void*)feedback);
 	}
 
-	//Send location to geo-location service for processing
-	std::string output = "";
-	return output;
+	return "";
 }
 
-std::string gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceData)
+const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceData)
 {
 	std::string dataAvailable = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.dataAvailable);
 	if (dataAvailable._Equal("A")) {
@@ -184,15 +136,6 @@ std::string gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 
 		//We sql server timestamp format - YYYY-MM-DD HH:MI:SS
 		std::string timeStamp = "20" + GPScharsToString(date.year) + "-" + GPScharsToString(date.month) + "-" + GPScharsToString(date.day) + " " + GPScharsToString(time.hh) + ":" + GPScharsToString(time.mm) + ":" + GPScharsToString(time.ss);
-		otl_datetime _dateTime;
-		_dateTime.day = std::atoi(GPScharsToString(date.day).c_str());
-		_dateTime.month = std::atoi(GPScharsToString(date.month).c_str());
-
-
-		_dateTime.year = std::atoi(std::string("20" + GPScharsToString(date.year)).c_str());
-		_dateTime.hour = std::atoi(GPScharsToString(time.hh).c_str());
-		_dateTime.minute = std::atoi(GPScharsToString(time.mm).c_str());
-		_dateTime.second = std::atoi(GPScharsToString(time.ss).c_str());
 
 		//std::string datetime = Utils::makeDateTimeFromGPSData(date, time);
 		std::string id = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.id);
@@ -220,58 +163,61 @@ std::string gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
+		device_feedback *feedback = (device_feedback *)malloc(sizeof(device_feedback));
+		feedback->acc_ignition_on = acc_ignition_on;
+		strcpy_s(feedback->deviceId, this->deviceId.c_str());
+		feedback->dlat = dlat;
+		feedback->dlon = dlon;
+		feedback->dmile_data = dmile_data;
+		feedback->dorientation = dorientation;
+		feedback->dspeed = dspeed;
+		feedback->main_power_switch_on = main_power_switch_on;
 
-		//save the location details
-		try
-		{
-			int is_device_registered = 0;
-			otl_stream o(1,
-				"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
-				this->db);
+		datetime* __datetime = (datetime *)malloc(sizeof(datetime));;
+		__datetime->day = std::atoi(GPScharsToString(date.day).c_str());
+		__datetime->month = std::atoi(GPScharsToString(date.month).c_str());
+		__datetime->year = std::atoi(GPScharsToString(date.year).c_str());
 
-			//o.set_commit(0);
+		__datetime->hour = std::atoi(GPScharsToString(time.hh).c_str());
+		__datetime->minute = std::atoi(GPScharsToString(time.mm).c_str());
+		__datetime->second = std::atoi(GPScharsToString(time.ss).c_str());
 
-			o << _dateTime
-				<< dlat
-				<< dlon
-				<< this->deviceId.c_str()
-				<< dorientation
-				<< dspeed
-				<< (main_power_switch_on ? 1 : 0)
-				<< (acc_ignition_on ? 1 : 0)
-				<< (double)dmile_data;
-		}
-		catch (otl_exception& p) {
-			cerr << p.msg << endl; // print out error message
-			cerr << p.code << endl; // print out error code
-			cerr << p.var_info << endl; // print out the variable that caused the error
-			cerr << p.sqlstate << endl; // print out SQLSTATE message
-			cerr << p.stm_text << endl; // print out SQL that caused the error
-		}
+		feedback->_dateTime = __datetime;
+
+		this->handlers->log_feedback(feedback);
+		free((void*)feedback->_dateTime);
+		free((void*)feedback);
 	}
 
-	//Send location to geo-location service for processing
-	std::string output = "";
-	return output;
+	return "";
 }
 
-std::string gps_service::deviceHandshake(data_payload_from_device*  deviceData)
+const char* gps_service::deviceHandshake(data_payload_from_device*  deviceData)
 {
+	char * output = (char*) malloc(1024);
+	memset((void*)output, 0, 1024);
+
 	std::string id(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.id, sizeof(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.id));
 	std::string deviceId(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.device_id, sizeof(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.device_id));
 
 	//Get list of configured devices...
-	bool isAKnownDevice = this->isDeviceDefined(deviceId);
+	bool isAKnownDevice = this->handlers->is_device_registered(deviceId.c_str());
 
 	//
 	if (isAKnownDevice)
 	{
-		std::string output = std::move(Utils::formDeviceResponse(id.c_str(), "AP01", "HSO"));
+		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP01", "HSO"));
+		strcpy_s(output, 1024, o.c_str());
 		return output;
 	}
 	else
 	{
 		return "";
 	}
+}
+
+void gps_service::set_handlers(LPGPS_HANDLERS handlers)
+{
+	this->handlers = handlers;
 }
 
