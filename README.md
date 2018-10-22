@@ -1,10 +1,11 @@
-# INTRODUCTION 
+# INTRODUCTION
 
-Geolocation service (GS) is a high performance location service middleware. GS is written in C/C++ and its implements the Plugable API architecture and model. This very extensible modular design also  
+Geolocation service (GS) is a high performance location service middleware. GS is written in C/C++ and its implements the Plugable API architecture and model. This very extensible modular design also allows auxiliary processing through a queue based messaging system.
 
-This software is designed to be fully open source and free for personal use.  
+This software is liscensed under LGPL. It's is designed to be fully open source and free for personal use.
 
-If you intend to use this product for profit; kindly contact one of our products & services personnel to ensure your success using this product.
+If you intend to use this product for profit; kindly contact one of our products & services personnel to ensure your success using this product, or contact on: josepholasoji@gmail.com.
+
 
 
 # DESIGN AND ARCHITECTURE  
