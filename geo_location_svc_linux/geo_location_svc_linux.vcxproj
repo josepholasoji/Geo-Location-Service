@@ -112,7 +112,7 @@
     <Link>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <LibraryDependencies>zmq;odbc;odbccr;pthread;dl</LibraryDependencies>
+      <LibraryDependencies>zmq;odbc;odbccr;pthread;dl;boost_system</LibraryDependencies>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
