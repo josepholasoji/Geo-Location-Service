@@ -1,3 +1,8 @@
+[![Travis-CI Status](https://img.shields.io/travis/zeromq/cppzmq/master.svg?label=Linux%20|%20OSX)](https://travis-ci.org/josepholasoji/Geo-Location-Service)
+[![Appveyor Status](https://img.shields.io/appveyor/ci/zeromq/cppzmq/master.svg?label=Windows)](https://ci.appveyor.com/project/zeromq/cppzmq/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/zeromq/cppzmq/badge.svg?branch=master)](https://coveralls.io/github/zeromq/cppzmq?branch=master)
+[![License](https://img.shields.io/github/license/zeromq/cppzmq.svg)](https://github.com/josepholasoji/Geo-Location-Service/LICENSE)
+
 # INTRODUCTION
 
 Geolocation service (GS) is a high performance location service middleware. GS is written in C/C++ and its implements the Plugable API architecture and model. This  modular (and extensible) design allows for application to deploy only device(s) and functionality (s) needed. 
