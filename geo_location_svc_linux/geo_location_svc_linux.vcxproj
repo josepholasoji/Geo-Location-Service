@@ -87,17 +87,19 @@
     <AdditionalSourcesToCopyMapping>
     </AdditionalSourcesToCopyMapping>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>/usr/apps/geolocation_svc/</OutDir>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="..\geo_location\geo_location_svc.cpp" />
     <ClCompile Include="..\geo_location\main.cpp" />
+    <ClCompile Include="..\geo_location\NanoLog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\geo_location\geo_location_svc.h" />
+    <ClInclude Include="..\geo_location\NanoLog.hpp" />
     <ClInclude Include="..\geo_location\otlv4.h" />
     <ClInclude Include="..\geo_location\server.h" />
     <ClInclude Include="..\geo_location\session.h" />
-    <ClInclude Include="..\geo_location\Utils.h" />
     <ClInclude Include="..\geo_location\zmq.hpp" />
     <ClInclude Include="..\include\zmq.h" />
     <ClInclude Include="..\include\zmq_utils.h" />

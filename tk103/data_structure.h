@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "gps_message_body.h"
+#include <cinttypes>
 
 struct data_structure
 {
@@ -8,6 +9,6 @@ struct data_structure
 	int serial_number_len;
 	unsigned char* time;
 	unsigned char* time_len;
-	__int32 command;
+	std::int32_t command;
 };
 

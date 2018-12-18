@@ -18,6 +18,7 @@
 #include <utility>
 #include <boost/asio.hpp>
 #include "session.h"
+#include "NanoLog.hpp"
 //#include <zmq.h>
 //#include <zmq_utils.h>
 
@@ -37,6 +38,7 @@ public:
 	~server()
 	{
 		//Stop zero mq
+		LOG_WARN << "Stopping device services for " << gps->deviceName() << " @ " << gps->serverPort();
 	}
 
 private:

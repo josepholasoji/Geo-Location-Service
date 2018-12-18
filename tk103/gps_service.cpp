@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include "gps_service.h"
-#include "..\sdk\Utils.h"
+#include "../sdk/Utils.h"
 
 using namespace std;
 
 gps_service::gps_service()
 {
-	deviceId = std::string("123456");
+	deviceId = std::string("000000000");
 	this->handlers = nullptr;
 }
 
@@ -32,7 +33,11 @@ const char* gps_service::deviceLogin(data_payload_from_device*  deviceData)
 	{
 		this->deviceId = deviceId;
 		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
+#if defined(_MSC_VER)
 		strcpy_s(output, 1024, o.c_str());
+#else
+		strcpy(output, o.c_str());
+#endif // defined(WINDOW) && (_MSC_VER)
 		return output;
 	}
 	else
@@ -45,18 +50,18 @@ const char* gps_service::deviceLogin(data_payload_from_device*  deviceData)
 const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 {
 	std::string dataAvailable = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.dataAvailable);
-	if (dataAvailable._Equal("A")) {
+	if (dataAvailable.compare("A") == 0) {
 		_latitude lat = deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.latitude;
 		_longitude lon = deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.longitude;
 		_gps_data_time time = deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.time;
 		_gps_data_date date = deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.date;
 
 		double dlat = std::atof(GPScharsToString(lat.degree).c_str()) + (std::atof(GPScharsToString(lat.minutes).c_str()) / 60);
-		if (GPScharsToString(lat.direction)._Equal("S"))
+		if (GPScharsToString(lat.direction).compare("S") == 0)
 			dlat = -dlat;
 
 		double dlon = std::atof(GPScharsToString(lon.degree).c_str()) + (std::atof(GPScharsToString(lon.minutes).c_str()) / 60);
-		if (GPScharsToString(lon.direction)._Equal("W"))
+		if (GPScharsToString(lon.direction).compare("W") == 0)
 			dlon = -dlon;
 
 		//We sql server timestamp format - YYYY-MM-DD HH:MI:SS
@@ -77,20 +82,25 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 
 		std::string MilePost = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.MilePost);
 		std::string sMilepost = "";
-		if (MilePost._Equal("L")) {
+		if (MilePost.compare("L") == 0) {
 			sMilepost = "Mileage";
 		}
 
 		std::string MileData = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.MileData);
 		std::string _s("0x");
 		_s.append(MileData);
-		unsigned long dmile_data = 0;
+		double dmile_data = 0;
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
 		device_feedback *feedback = (device_feedback *) malloc(sizeof(device_feedback));
 		feedback->acc_ignition_on = acc_ignition_on;
+#if defined(_MSC_VER)
 		strcpy_s(feedback->deviceId, this->deviceId.c_str());
+#else
+		strcpy(feedback->deviceId, this->deviceId.c_str());
+#endif // defined(WINDOW) && (_MSC_VER)
+
 		feedback->dlat = dlat;
 		feedback->dlon = dlon;
 		feedback->dmile_data = dmile_data;
@@ -120,18 +130,18 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceData)
 {
 	std::string dataAvailable = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.dataAvailable);
-	if (dataAvailable._Equal("A")) {
+	if (dataAvailable.compare("A") == 0) {
 		_latitude lat = deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.latitude;
 		_longitude lon = deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.longitude;
 		_gps_data_time time = deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.time;
 		_gps_data_date date = deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.date;
 
 		double dlat = std::atof(GPScharsToString(lat.degree).c_str()) + (std::atof(GPScharsToString(lat.minutes).c_str()) / 60);
-		if (GPScharsToString(lat.direction)._Equal("S"))
+		if (GPScharsToString(lat.direction).compare("S") == 0)
 			dlat = -dlat;
 
 		double dlon = std::atof(GPScharsToString(lon.degree).c_str()) + (std::atof(GPScharsToString(lon.minutes).c_str()) / 60);
-		if (GPScharsToString(lon.direction)._Equal("W"))
+		if (GPScharsToString(lon.direction).compare("W") == 0)
 			dlon = -dlon;
 
 		//We sql server timestamp format - YYYY-MM-DD HH:MI:SS
@@ -152,20 +162,24 @@ const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 
 		std::string MilePost = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.MilePost);
 		std::string sMilepost = "";
-		if (MilePost._Equal("L")) {
+		if (MilePost.compare("L") == 0) {
 			sMilepost = "Mileage";
 		}
 
 		std::string MileData = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.MileData);
 		std::string _s("0x");
 		_s.append(MileData);
-		unsigned long dmile_data = 0;
+		double dmile_data = 0;
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
 		device_feedback *feedback = (device_feedback *)malloc(sizeof(device_feedback));
 		feedback->acc_ignition_on = acc_ignition_on;
+#if defined(_MSC_VER)
 		strcpy_s(feedback->deviceId, this->deviceId.c_str());
+#else
+		strcpy(feedback->deviceId, this->deviceId.c_str());
+#endif // defined(WINDOW) && (_MSC_VER)
 		feedback->dlat = dlat;
 		feedback->dlon = dlon;
 		feedback->dmile_data = dmile_data;
@@ -207,7 +221,12 @@ const char* gps_service::deviceHandshake(data_payload_from_device*  deviceData)
 	if (isAKnownDevice)
 	{
 		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP01", "HSO"));
+#if defined(_MSC_VER)
 		strcpy_s(output, 1024, o.c_str());
+#else
+		strcpy(output, o.c_str());
+#endif // defined(WINDOW) && (_MSC_VER)
+
 		return output;
 	}
 	else

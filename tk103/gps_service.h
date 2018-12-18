@@ -1,11 +1,10 @@
 #pragma once
-
 #include<string>
 #include <sstream>
 
-#include "..\sdk\data_payload_from_device.h"
-#include "..\sdk\data_downstream.h"
-#include "..\sdk\sdk.h"
+#include "../sdk/data_payload_from_device.h"
+#include "../sdk/data_downstream.h"
+#include "../sdk/sdk.h"
 
 
 class gps_service

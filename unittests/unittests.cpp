@@ -89,8 +89,8 @@ namespace unittests
 			Assert::IsNotNull(_data_payload_from_device);
 
 			std::string command_string = std::string(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command, sizeof(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command));
-			auto message_entry = _gps->device_command_message.find(command_string);
-			Assert::IsFalse(message_entry == _gps->device_command_message.end());
+			auto message_entry = _gps->deviceCommandMessage().find(command_string);
+			Assert::IsFalse(message_entry == _gps->deviceCommandMessage().end());
 
 			struct _command_message message = message_entry->second;
 			Assert::IsNotNull(message.message_description);
