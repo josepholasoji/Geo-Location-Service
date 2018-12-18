@@ -252,7 +252,7 @@ gps * Ctk103::detect(char *, int)
 
 short int Ctk103::serverPort()
 {
-	return 999;
+	return 2701;
 }
 
 const char* Ctk103::deviceName()
