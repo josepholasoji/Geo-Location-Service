@@ -18,7 +18,7 @@
 #include <utility>
 #include <boost/asio.hpp>
 #include "session.h"
-#include "NanoLog.hpp"
+#include "../sdk/NanoLog.hpp"
 //#include <zmq.h>
 //#include <zmq_utils.h>
 

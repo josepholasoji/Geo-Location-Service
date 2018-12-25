@@ -16,9 +16,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-817
 		sdk\data_payload_from_device.h = sdk\data_payload_from_device.h
 		sdk\dms.h = sdk\dms.h
 		sdk\gps.h = sdk\gps.h
+		sdk\NanoLog.cpp = sdk\NanoLog.cpp
+		sdk\NanoLog.hpp = sdk\NanoLog.hpp
 		sdk\otlv4.h = sdk\otlv4.h
 		sdk.h = sdk.h
+		sdk\stdafx.h = sdk\stdafx.h
 		sdk\Utils.h = sdk\Utils.h
+		sdk\zmq.h = sdk\zmq.h
+		sdk\zmq.hpp = sdk\zmq.hpp
+		sdk\zmq_utils.h = sdk\zmq_utils.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcxproj", "{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}"

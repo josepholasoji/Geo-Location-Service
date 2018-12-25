@@ -12,7 +12,7 @@
 #include "../sdk/gps.h"
 #include "../sdk/data_downstream.h"
 #include <boost/algorithm/string.hpp>
-#include "NanoLog.hpp"
+#include "../sdk/NanoLog.hpp"
 
 using boost::asio::ip::tcp;
 

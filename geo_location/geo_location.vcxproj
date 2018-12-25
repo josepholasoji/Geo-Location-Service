@@ -164,17 +164,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\sdk\NanoLog.cpp" />
     <ClCompile Include="geo_location_svc.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NanoLog.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\sdk\NanoLog.hpp" />
     <ClInclude Include="geo_location_svc.h" />
-    <ClInclude Include="NanoLog.hpp" />
-    <ClInclude Include="otlv4.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="session.h" />
-    <ClInclude Include="zmq.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

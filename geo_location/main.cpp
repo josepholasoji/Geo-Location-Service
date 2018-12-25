@@ -7,8 +7,7 @@
 
 #include "server.h"
 #include "../sdk/sdk.h"
-#include "zmq.hpp"
-#include "NanoLog.hpp"
+#include "../sdk/zmq.hpp"
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -18,72 +17,44 @@
 #include <thread>
 #include <algorithm>
 
-#ifndef _MSC_VER
-	#include <dlfcn.h>
-	#include <dirent.h>
-#endif 
-
-#define OTL_ODBC 
-#define OTL_ANSI_CPP_11_NULLPTR_SUPPORT
-#define OTL_ODBC_SELECT_STM_EXECUTE_BEFORE_DESCRIBE
-
-#include "otlv4.h"
 
 using namespace std;
 using boost::property_tree::ptree;
 
-otl_connect db;
 const char dir_path[] = "./gps";
 LPGPS_HANDLERS handlers = nullptr;
-zmq::socket_t* publisher = nullptr;
 
 typedef int ( *f_funci)();
 typedef LPGPS ( *f_load)(LPGPS_HANDLERS);
 
-void log_feedback(device_feedback* device_feeback);
-bool is_device_registered(const char* deviceId);
 
 void 
 #ifdef _MSC_VER 
 __cdecl 
 #endif 
-start_feedbacklog_sql_job(void *vzmq_context);
+start_feedbacklog_sql_job(void* params);
  
 
 int main()
 {
-	//start logger
-	// Log will roll to the next file after every 1MB.
-	nanolog::initialize(nanolog::GuaranteedLogger(), "logs/", "geolocation_service.log", 10);
-	nanolog::set_log_level(nanolog::LogLevel::WARN);
-
-	LOG_INFO << "GEO - LOCATION SERVICE - 1.0";
-
 	try
 	{
-		//start connection to sql db
-		otl_connect::otl_initialize(1);		
-		db.rlogon("DRIVER={MySQL};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
-		LOG_WARN << "Successfully logged on to DB @ " << "127.0.0.1 as " << "root";
-
-		//Zero MQ version
-		int major, minor, patch;
-		zmq_version(&major, &minor, &patch);
-		LOG_INFO << "Current 0MQ version is" << major << "." << minor << "." << patch;
-
-		//Start zero mq
-		LOG_WARN << "Starting MQ on port 5555";
-		zmq::context_t* context = new zmq::context_t(1);
-		publisher = new zmq::socket_t(*context, ZMQ_PUB);
-		publisher->setsockopt(ZMQ_LINGER, 0);
-		publisher->bind("tcp://*:5555");
-		LOG_WARN << "0MQ successfully started on port 5555";
-
+		handlers = (LPGPS_HANDLERS) new GPS_HANDLERS();
+		otl_connect* db_addr = &handlers->db;
+		std::tuple<zmq::context_t*, otl_connect*> *log_params = new std::tuple<zmq::context_t*, otl_connect*>(handlers->context, db_addr);
 
 #ifdef _MSC_VER
-		_beginthread(start_feedbacklog_sql_job, 1024, context);
+		_beginthread(start_feedbacklog_sql_job, 1024, (void*)log_params);
 #else
-
+		pthread_t td;
+		int err = pthread_create(&td, NULL, [](void* _log_params)->void* {
+			start_feedbacklog_sql_job(_log_params);
+			return NULL;
+		}, (void*)log_params);
+		if (err != 0)
+			printf("\ncan't create thread :[%s]", strerror(err));
+		else
+			printf("\n Thread created successfully\n");
 #endif 
 	}
 	catch (otl_exception& p)
@@ -97,10 +68,6 @@ int main()
 	catch (exception ex) {
 		LOG_WARN << ex.what();
 	}
-
-	handlers = (LPGPS_HANDLERS)malloc(sizeof(GPS_HANDLERS));
-	handlers->log_feedback = log_feedback;
-	handlers->is_device_registered = is_device_registered;
 
 	//
 	auto  gpses = std::make_shared<std::vector<gps*>>();
@@ -198,9 +165,8 @@ int main()
 	io_service.run();
 
 	//prepare of exit
-	auto on_exit = [] {
-		db.logoff();
-		free((void*)handlers);
+	auto on_exit = [] {		
+		delete handlers;
 	};
 
 	atexit(on_exit);
@@ -211,21 +177,25 @@ void
 #ifdef _MSC_VER 
 	__cdecl 
 #endif 
-	start_feedbacklog_sql_job(void *vzmq_context){
+	start_feedbacklog_sql_job(void* params){
 
-	otl_connect _db;
-	_db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
+	LOG_WARN << "Starting the device feedback logger...";
+	std::tuple<zmq::context_t*, otl_connect*>* tp = (std::tuple<zmq::context_t*, otl_connect*>*)params;
+	zmq::context_t* zmq_context = std::get<0>(*tp);
+	otl_connect* db = (otl_connect*)std::get<1>(*tp);
 
-	zmq::context_t* zmq_context = (zmq::context_t*)vzmq_context;
+	LOG_WARN << "Starting the device feedback logger Queue...";
+	
 
-	//connect the sucriber
+	//connect the subscriber
 	zmq::socket_t* subscriber = new zmq::socket_t(*zmq_context, ZMQ_SUB);
 	subscriber->setsockopt(ZMQ_LINGER, 0);
 	subscriber->connect("tcp://localhost:5555");
 
-	//add subriction filter for feeback messages only
+	//add subscribtion filter for feeback messages only
 	const char *filter = "";
 	subscriber->setsockopt(ZMQ_SUBSCRIBE, filter, strlen(filter));
+	LOG_WARN << "Device feedback logger queue started on port: 5555";
 
 	while (true)
 	{
@@ -239,6 +209,8 @@ void
 		boost::trim(str);
 		std::istringstream is(str);
 		read_json(is, root);
+
+		LOG_WARN << "Recieved data for logging: " << str;
 
 		device_feedback *device_feeback = (device_feedback *)malloc(sizeof(device_feedback));
 		device_feeback->acc_ignition_on = root.get<double>("acc_ignition_on", 0);
@@ -277,9 +249,9 @@ void
 		try
 		{
 			//
-			otl_stream o(1,
+			otl_stream o(1024,
 				"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:ignition_is_on<int,in>,:miles_data<double,in>)}",
-				_db);
+				*db);
 
 			o.set_commit(0);
 
@@ -292,6 +264,8 @@ void
 				<< (device_feeback->main_power_switch_on ? 1 : 0)
 				<< (device_feeback->acc_ignition_on ? 1 : 0)
 				<< (double)device_feeback->dmile_data;
+
+			LOG_WARN << "Device feedback logged successfully!";
 		}
 		catch (otl_exception& p) {
 			LOG_WARN << (char*)p.msg; // print out error message
@@ -303,66 +277,5 @@ void
 	}
 }
 
-bool is_device_registered(const char* deviceId) {
-	try {
-		int is_device_registered = 0;
-		otl_stream o(1, "{call find_device(:device_id<char[20],in>, @registered)}", db);
-		o.set_commit(0);
-		o << deviceId;
 
-		//read all the outut...
-		otl_stream s(1, "select @registered  :#1<int>", db, otl_implicit_select);
-		s >> is_device_registered;
-		return is_device_registered > 0;
-	}
-	catch (otl_exception& p) {
-		LOG_WARN << (char*)p.msg; // print out error message
-		LOG_WARN << p.code; // print out error code
-		LOG_WARN << p.var_info; // print out the variable that caused the error
-		LOG_WARN << (char*)p.sqlstate; // print out SQLSTATE message
-		LOG_WARN << p.stm_text; // print out SQL that caused the error
-	}
 
-	return false;
-}
-
-void log_feedback(device_feedback* device_feeback) {
-
-	//TODO:load default feedback store from the db, 
-	//remove the static assignment below
-	__data_store data_store_selection = __data_store::SQLDB;
-
-	if (data_store_selection == __data_store::SQLDB) {
-		ptree out;
-		out.put("acc_ignition_on", device_feeback->acc_ignition_on);
-		out.put("deviceId", device_feeback->deviceId);
-		out.put("dlat", device_feeback->dlat);
-		out.put("dlon", device_feeback->dlon);
-		out.put("dorientation", device_feeback->dorientation);
-		out.put("dspeed", device_feeback->dspeed);
-		out.put("main_power_switch_on", device_feeback->main_power_switch_on);
-
-		ptree out_date_and_time;
-		out.put("_dateTime.day", device_feeback->_dateTime->day);
-		out.put("_dateTime.hour", device_feeback->_dateTime->hour);
-		out.put("_dateTime.minute", device_feeback->_dateTime->minute);
-		out.put("_dateTime.month", device_feeback->_dateTime->month);
-		out.put("_dateTime.second", device_feeback->_dateTime->second);
-		out.put("_dateTime.year", device_feeback->_dateTime->year);
-
-		out.put("message_type", "GPS_FEEDBACK_MEESAGE_SQL_COMMIT");
-
-		std::ostringstream oss;
-		boost::property_tree::write_json(oss, out);
-		std::string jsonString = oss.str();
-
-		//send a 0MQ message
-		publisher->send(jsonString.c_str(), jsonString.size());
-	}
-	else if (data_store_selection == __data_store::MONGODB) {
-
-	}
-	else if (data_store_selection == __data_store::REDIS) {
-
-	}
-}

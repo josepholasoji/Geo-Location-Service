@@ -111,7 +111,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -159,11 +159,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\sdk\data_downstream.h" />
+    <ClInclude Include="..\sdk\data_payload_from_device.h" />
+    <ClInclude Include="..\sdk\dms.h" />
+    <ClInclude Include="..\sdk\gps.h" />
+    <ClInclude Include="..\sdk\NanoLog.hpp" />
+    <ClInclude Include="..\sdk\otlv4.h" />
+    <ClInclude Include="..\sdk\sdk.h" />
+    <ClInclude Include="..\sdk\Utils.h" />
+    <ClInclude Include="..\sdk\zmq.h" />
+    <ClInclude Include="..\sdk\zmq.hpp" />
+    <ClInclude Include="..\sdk\zmq_utils.h" />
     <ClInclude Include="modelutil.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\sdk\NanoLog.cpp" />
     <ClCompile Include="modelutil.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

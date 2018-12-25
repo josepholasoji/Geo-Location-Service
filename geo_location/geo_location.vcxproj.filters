@@ -21,7 +21,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NanoLog.cpp">
+    <ClCompile Include="..\sdk\NanoLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,13 +35,7 @@
     <ClInclude Include="session.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="otlv4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="zmq.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NanoLog.hpp">
+    <ClInclude Include="..\sdk\NanoLog.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

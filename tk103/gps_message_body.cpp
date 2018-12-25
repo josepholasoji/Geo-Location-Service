@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "gps_message_body.h"
 
 
