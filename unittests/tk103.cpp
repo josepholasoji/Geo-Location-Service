@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "..\sdk\utils.h"
-#include "..\sdk\gps.h"
+#include "../sdk/gps.h"
 #include "..\sdk\data_payload_from_device.h"
 #include "../tk103/tk103.h"
 #include "..\sdk\sdk.h"
@@ -15,56 +15,19 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #define OTL_ANSI_CPP_11_NULLPTR_SUPPORT
 #define OTL_ODBC_SELECT_STM_EXECUTE_BEFORE_DESCRIBE
 
-#include "../geo_location/otlv4.h"
+#include "../sdk/otlv4.h"
 #include <iostream>
 
-namespace unittests
+namespace tk103
 {
-	TEST_CLASS(unittests_withmocks)
+	TEST_CLASS(tk103_unittests_withmocks)
 	{
 	public:
-		LPGPS_HANDLERS evenHandlers = nullptr;
+		geolocation_svc::LPGPS_HANDLERS evenHandlers = nullptr;
 
 		TEST_METHOD_INITIALIZE(startup) {
-			evenHandlers = new GPS_HANDLERS();
-			evenHandlers->is_device_registered = [](const char *) {return true; };
-			evenHandlers->log_feedback = [](device_feedback* device_feeback)->void {
-				try
-				{
-					otl_connect db;
-					otl_connect::otl_initialize();
-					db.rlogon("DRIVER={MySQL ODBC 8.0 ANSI Driver};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
-
-					//
-					otl_datetime _dateTime;
-					_dateTime.day = device_feeback->_dateTime->day;
-					_dateTime.month = device_feeback->_dateTime->month;
-					_dateTime.year = std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str());
-					_dateTime.hour = device_feeback->_dateTime->hour;
-					_dateTime.minute = device_feeback->_dateTime->minute;
-					_dateTime.second = device_feeback->_dateTime->second;
-
-					//
-					otl_stream o(1,
-						"{call add_device_location_log(:time<timestamp,in>,:latitude<double,in>,:longitude<double,in>,:device_id<char[20],in>,:orientation<double,in>,:speed<double,in>,:power_switch_is_on<int,in>,:igintion_is_on<int,in>,:miles_data<double,in>)}",
-						db);
-
-					o.set_commit(0);
-
-					o << _dateTime
-						<< device_feeback->dlat
-						<< device_feeback->dlon
-						<< device_feeback->deviceId
-						<< device_feeback->dorientation
-						<< device_feeback->dspeed
-						<< (device_feeback->main_power_switch_on ? 1 : 0)
-						<< (device_feeback->acc_ignition_on ? 1 : 0)
-						<< (double)device_feeback->dmile_data;
-				}
-				catch (otl_exception& p) {
-
-				}
-			};
+			evenHandlers = new geolocation_svc::GPS_HANDLERS();
+			evenHandlers->start_device_feedbacks_logs_job();
 		}
 
 		TEST_METHOD_CLEANUP(cleanup) {
@@ -89,8 +52,8 @@ namespace unittests
 			Assert::IsNotNull(_data_payload_from_device);
 
 			std::string command_string = std::string(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command, sizeof(_data_payload_from_device->_MESSAGE_AND_ID_ONLY.command));
-			auto message_entry = _gps->device_command_message.find(command_string);
-			Assert::IsFalse(message_entry == _gps->device_command_message.end());
+			auto message_entry = _gps->deviceCommandMessage().find(command_string);
+			Assert::IsFalse(message_entry == _gps->deviceCommandMessage().end());
 
 			struct _command_message message = message_entry->second;
 			Assert::IsNotNull(message.message_description);

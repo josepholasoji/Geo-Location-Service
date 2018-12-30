@@ -1,4 +1,6 @@
 #pragma once
+ 
+
 class gps_message_body
 {
 public:

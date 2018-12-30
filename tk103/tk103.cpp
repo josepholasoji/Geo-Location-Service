@@ -1,18 +1,16 @@
 // tk103.cpp : Defines the exported functions for the DLL application.
 //
-
-#include "stdafx.h"
 #include "tk103.h"
-#include "..\sdk\data_payload_from_device.h"
-#include "..\sdk\data_downstream.h"
+#include "../sdk/data_payload_from_device.h"
+#include "../sdk/data_downstream.h"
 #include <thread>
 #include <memory>
 #include <boost/chrono.hpp>
-#include "..\sdk\Utils.h"
+#include "../sdk/Utils.h"
 
 
 // This is an example of an exported function.
-TK103_API gps*__stdcall load(LPGPS_HANDLERS handlers)
+TK103_API gps* load(geolocation_svc::LPGPS_HANDLERS handlers)
 {
 	gps* _gps = new Ctk103(handlers);
 	return _gps;
@@ -21,7 +19,7 @@ TK103_API gps*__stdcall load(LPGPS_HANDLERS handlers)
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
+Ctk103::Ctk103(geolocation_svc::LPGPS_HANDLERS _handlers)
 {
 	this->handlers = _handlers;
 
@@ -97,7 +95,6 @@ Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
 
 const char* Ctk103::process(const char *data, int size)
 {
-	struct _command_message msg = { 0 };
 	data_payload_from_device* deviceData = nullptr;
 
 	auto parsedData = this->parseDeviceRequest(data);
@@ -252,9 +249,23 @@ gps * Ctk103::detect(char *, int)
 	return nullptr;
 }
 
-int Ctk103::serverPort()
+short int Ctk103::serverPort()
 {
-	return 999;
+	return 2701;
+}
+
+const char* Ctk103::deviceName()
+{
+	return "TK103";
+}
+
+const char* Ctk103::deviceId()
+{
+	return this->_gps_service.deviceId.c_str();
+}
+
+TK103_API std::map<std::string, struct _command_message > Ctk103::deviceCommandMessage() {
+	return this->device_command_message;
 }
 
 void Ctk103::start()
@@ -310,9 +321,8 @@ int Ctk103::write(unsigned char* ch, int size)
 TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::parseDeviceRequest(const char* ch)
 {
 	data_payload_from_device* in_data = (data_payload_from_device *)(ch);
-
 	struct _command_message msg = this->device_command_message[std::string(in_data->_LOGIN_MESSAGE.command, sizeof(in_data->_LOGIN_MESSAGE.command))];
 
-	return { in_data, msg };
+	return std::tuple<data_payload_from_device*, struct _command_message>(in_data, msg);
 }
 

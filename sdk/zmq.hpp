@@ -48,7 +48,7 @@
 #define ZMQ_EXPLICIT
 #endif
 
-#include <zmq.h>
+#include "zmq.h"
 
 #include <cassert>
 #include <cstring>

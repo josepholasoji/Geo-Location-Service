@@ -10,13 +10,12 @@
 //#include "zmq.h"
 #include <thread>
 #include "../sdk/gps.h"
-#include "Utils.h"
 #include "../sdk/data_downstream.h"
 #include <boost/algorithm/string.hpp>
+#include "../sdk/NanoLog.hpp"
 
 using boost::asio::ip::tcp;
 
-Utils utils;
 class session
 	: public std::enable_shared_from_this<session>
 {
@@ -55,7 +54,7 @@ private:
 				char* _temp = this->buff;
 				_temp += strlen(this->buff); 
 				int write_index = 0;
-				for (int read_pointer = 0; read_pointer < total_new_length; read_pointer++)
+				for (unsigned int read_pointer = 0; read_pointer < total_new_length; read_pointer++)
 				{					
 					write_index = write_index < 1 ? 0 : write_index;
 
@@ -70,10 +69,14 @@ private:
 						//Process the data
 						std::string s = std::string(this->buff);
 						boost::trim(s);
+
+						LOG_WARN << "Recieved data from device (" << gps->deviceName() << " ) on device " << gps->deviceId() << " ): " << s;
+
 						std::string output = gps->process((const char*)s.c_str(), max_length);
 
 						if (output.length() > 0) {
 							//write out the output tot device
+							LOG_WARN << "Writing data to device (" << gps->deviceName() << " ) on device " << gps->deviceId() << " ): " << output;
 							boost::asio::async_write(socket_, boost::asio::buffer((unsigned char*)output.c_str(), output.length()),
 								[this, self](boost::system::error_code ec, std::size_t /*length*/)
 							{

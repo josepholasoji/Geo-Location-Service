@@ -4,7 +4,9 @@ class gps
 {
 public:
 	//
-	virtual int serverPort() = 0;
+	virtual short int serverPort() = 0;
+	virtual const char* deviceName() = 0;
+	virtual const char* deviceId() = 0;
 
 	// A method to process incoming data from the modem to start communication. 
 	//This is the first methd after the server accepts the connection from the modem.

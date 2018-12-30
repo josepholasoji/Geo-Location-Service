@@ -1,17 +1,19 @@
 #pragma once
 
 #define GPScharsToString(x) std::string(x, sizeof(x))
+//Miscs
+//#define GPScharsToString(x) std::string((char*)&x, sizeof(x))
 
 class Utils
 {
 public:
 	Utils() {};
 	~Utils() {};
-	void* Utils::detectDevice(char*, int) {
+	void* detectDevice(char*, int) {
 		return nullptr;
 	};
 
-	static std::string Utils::formDeviceResponse(const char *id, char* command, char* body) {
+	static const std::string formDeviceResponse(const char *id, const char* command, char* body) {
 		return std::string("(" + std::string(id) + std::string(command) + (body != nullptr ? std::string(body) : "") + ")");
 	};
 };

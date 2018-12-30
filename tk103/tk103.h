@@ -1,7 +1,7 @@
-﻿#ifndef TK103_EXPORTS
+﻿#pragma once
+#ifndef TK103_EXPORTS
 	#define TK103_EXPORTS
 #endif // !TK103_EXPORTS
-
 
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the TK103_EXPORTS
@@ -10,9 +10,17 @@
 // TK103_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
 #ifdef TK103_EXPORTS
-#define TK103_API __declspec(dllexport)
+	#if defined(_MSC_VER)
+		#define TK103_API __declspec(dllexport)
+	#else
+		#define TK103_API 
+	#endif // defined(WINDOW) && (_MSC_VER)
 #else
-#define TK103_API __declspec(dllimport)
+	#if defined(_MSC_VER)
+		#define TK103_API __declspec(dllimport)
+	#else
+		#define TK103_API 
+	#endif // defined(WINDOW) && (_MSC_VER)
 #endif
 
 #include <string>
@@ -24,10 +32,8 @@
 #include <boost/asio.hpp>
 #include <tuple>
 #include "gps_service.h"
-#include "..\sdk\sdk.h"
+#include "../sdk/sdk.h"
 
-//Miscs
-#define GPScharsToString(x) std::string((char*)&x, sizeof(x))
 
 //defintions
 #define HEAD_LENGTH 1
@@ -187,16 +193,6 @@
 //Response	No
 #define READ_ANSWER_THE_SETTING_ACC_CLOSE_SENDING_DATA_INTERVALS (source, id, command) sprintf(source, "(%12s%4s)", id, command)
 
-
-
-struct _command_message
-{
-	const char *message_type_subtype_number;
-	const char *message_description;
-	const char *remark;
-	enum _command_message_enum type;
-};
-
 enum _command_message_enum
 {
 	AP00,
@@ -258,33 +254,43 @@ enum _command_message_enum
 	BV01,
 	BV02
 };
+
+struct _command_message
+{
+	const char *message_type_subtype_number;
+	const char *message_description;
+	const char *remark;
+	enum _command_message_enum type;
+};
+
 extern "C"
 {
-	TK103_API  gps* __stdcall load(LPGPS_HANDLERS);
+	TK103_API  gps* load(geolocation_svc::LPGPS_HANDLERS);
 }
 
 // This class is exported from the tk103.dll
 class Ctk103: public gps {
-public:
 	int istatus;
 	bool started = false;
 	std::map<std::string, struct _command_message > device_command_message;
-	std::string deviceId;
+	std::string _deviceId;
 	gps_service _gps_service;
 
-	LPGPS_HANDLERS handlers;
+	geolocation_svc::LPGPS_HANDLERS handlers;
 
-	Ctk103(LPGPS_HANDLERS);
+	void *zmq_context;
+	void *zmq_in_socket_handle, *zmq_out_socket_handle;
+
+public:
+
+	Ctk103(geolocation_svc::LPGPS_HANDLERS);
 	~ Ctk103();
 
 	//
 	unsigned char* read();
 	int write(unsigned char* ch, int size);
 	TK103_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(const char* ch);
-
-	void *zmq_context;
-	void *zmq_in_socket_handle, *zmq_out_socket_handle;
-
+	TK103_API std::map<std::string, struct _command_message > deviceCommandMessage();
 
 	// Inherited via gps
 	virtual void start() override;
@@ -298,7 +304,9 @@ public:
 	virtual const char* process(const char *data, int size);
 
 	// Inherited via gps
-	virtual int serverPort() override;
+	virtual short int serverPort() override;
+	virtual const char* deviceId() override;
+	virtual const char* deviceName() override;
 };
 
 extern TK103_API int ntk103;
