@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tk103", "tk103\tk103.vcxproj", "{F590249F-7523-4C6B-894E-CE3FC0DD41CE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc", "geo_location\geo_location.vcxproj", "{473649D2-4578-4712-8AC6-669332E19085}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F590249F-7523-4C6B-894E-CE3FC0DD41CE} = {F590249F-7523-4C6B-894E-CE3FC0DD41CE}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-8178-499D-A646-679459EC8201}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,7 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-817
 		sdk\NanoLog.cpp = sdk\NanoLog.cpp
 		sdk\NanoLog.hpp = sdk\NanoLog.hpp
 		sdk\otlv4.h = sdk\otlv4.h
-		sdk.h = sdk.h
+		sdk\sdk.cpp = sdk\sdk.cpp
+		sdk\sdk.h = sdk\sdk.h
+		sdk\sdk_linux.h = sdk\sdk_linux.h
 		sdk\stdafx.h = sdk\stdafx.h
 		sdk\Utils.h = sdk\Utils.h
 		sdk\zmq.h = sdk\zmq.h
@@ -30,6 +29,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcxproj", "{5CE80065-C34A-4A1E-B89B-4A1E8A4E4586}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F590249F-7523-4C6B-894E-CE3FC0DD41CE} = {F590249F-7523-4C6B-894E-CE3FC0DD41CE}
+		{473649D2-4578-4712-8AC6-669332E19085} = {473649D2-4578-4712-8AC6-669332E19085}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc_linux", "geo_location_svc_linux\geo_location_svc_linux.vcxproj", "{8F563C51-D84B-4110-BBF4-46AF70E536E2}"

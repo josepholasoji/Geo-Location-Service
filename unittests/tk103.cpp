@@ -18,15 +18,16 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #include "../sdk/otlv4.h"
 #include <iostream>
 
-namespace unittests
+namespace tk103
 {
-	TEST_CLASS(unittests_withmocks)
+	TEST_CLASS(tk103_unittests_withmocks)
 	{
 	public:
 		LPGPS_HANDLERS evenHandlers = nullptr;
 
 		TEST_METHOD_INITIALIZE(startup) {
 			evenHandlers = new GPS_HANDLERS();
+			evenHandlers->start_device_feedbacks_logs_job();
 		}
 
 		TEST_METHOD_CLEANUP(cleanup) {
