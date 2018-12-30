@@ -4,10 +4,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define OTL_ODBC 
-#define OTL_ANSI_CPP_11_NULLPTR_SUPPORT
-#define OTL_ODBC_SELECT_STM_EXECUTE_BEFORE_DESCRIBE
-
 namespace geo_location_svc
 {
 	TEST_CLASS(geo_location_svc_unittests_withmocks)
@@ -32,7 +28,7 @@ namespace geo_location_svc
 
 		TEST_METHOD(must_work)
 		{
-			Assert::IsTrue(true);
+			Assert::IsTrue((1 + 1) == 2);
 		}
 
 	};

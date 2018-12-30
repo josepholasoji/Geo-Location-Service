@@ -1,4 +1,3 @@
-
 #include "../sdk/stdafx.h"
 #include "server.h"
 #include "../sdk/sdk.h"

@@ -1,5 +1,6 @@
 // tk103.cpp : Defines the exported functions for the DLL application.
 //
+#include "../sdk/stdafx.h"
 #include "tk103.h"
 #include "../sdk/data_payload_from_device.h"
 #include "../sdk/data_downstream.h"

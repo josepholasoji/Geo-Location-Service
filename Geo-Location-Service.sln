@@ -36,6 +36,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc_linux", "g
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tk_103_linux", "tk_103_linux\tk_103_linux.vcxproj", "{D61D6AB7-138B-437B-A9B9-DB3350B76CA2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_tests", "geo_location_tests\geo_location_tests.vcxproj", "{0579C7AF-8CC6-42EE-99AF-421BC4525380}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -116,6 +118,18 @@ Global
 		{D61D6AB7-138B-437B-A9B9-DB3350B76CA2}.Release|x64.Build.0 = Release|x64
 		{D61D6AB7-138B-437B-A9B9-DB3350B76CA2}.Release|x86.ActiveCfg = Release|x86
 		{D61D6AB7-138B-437B-A9B9-DB3350B76CA2}.Release|x86.Build.0 = Release|x86
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Debug|ARM.ActiveCfg = Debug|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Debug|x64.ActiveCfg = Debug|x64
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Debug|x64.Build.0 = Debug|x64
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Debug|x86.ActiveCfg = Debug|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Debug|x86.Build.0 = Debug|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Release|ARM.ActiveCfg = Release|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Release|ARM64.ActiveCfg = Release|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Release|x64.ActiveCfg = Release|x64
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Release|x64.Build.0 = Release|x64
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Release|x86.ActiveCfg = Release|Win32
+		{0579C7AF-8CC6-42EE-99AF-421BC4525380}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
