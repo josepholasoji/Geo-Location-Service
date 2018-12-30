@@ -1,3 +1,4 @@
+#include "sdk.h"
 #pragma once
 #include "sdk.h"
 
@@ -103,18 +104,18 @@ namespace geolocation_svc {
 		//Search the plugins directory for service plugins
 		WIN32_FIND_DATA file = { 0 };
 		char path[MAX_PATH] = { 0 };
-		GetCurrentDirectory(MAX_PATH, (LPWSTR)path);
+		GetCurrentDirectory(MAX_PATH, (LPSTR)path);
 
 		LOG_WARN << "Searching for GPS files...";
 
-		HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
+		HANDLE search_handle = FindFirstFile("services\\*.gps", &file);
 		if (search_handle) {
 			do {
 				//load each dynamically...
-				auto gpsfile = std::wstring(L"services\\").append(file.cFileName);
+				auto gpsfile = std::string("services\\").append(file.cFileName);
 				//LOG_WARN << "Found GPS file @ " << gpsfile.c_str();
 
-				HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)gpsfile.c_str());
+				HINSTANCE hGetProcIDDLL = LoadLibrary((LPCSTR)gpsfile.c_str());
 
 				if (!hGetProcIDDLL) {
 					std::cout << "could not load the GPS service file" << std::endl;
@@ -180,13 +181,14 @@ namespace geolocation_svc {
 				http_client client(U("http://127.0.0.1:8529/_db/geo_location/_api/document/logs/"));
 				http_request request(methods::POST);
 				request.headers().add(L"Content-type", L"application/json");
-				request.headers().add(L"Autorization", utility::conversions::to_base64(__gps__::self->get_document_db_username + ":" +__gps__::self->get_document_db_userpassword));
+
+				std::string authData = std::string(__gps__::self->get_document_db_username() + ":" + __gps__::self->get_document_db_userpassword());
+				request.headers().add(L"Autorization", utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
 				request.set_body(web::json::value(str.c_str()));
 
 				auto response = client.request(request)
 					.then([str](http_response response) {
-					if (response.status_code != status_codes::Accepted &&
-						response.status_code != status_codes::Created) {
+					if (response.status_code() != status_codes::Accepted && response.status_code() != status_codes::Created) {
 
 						boost::property_tree::ptree root;
 						std::istringstream is(str);
@@ -233,9 +235,12 @@ namespace geolocation_svc {
 		http_client client(web::uri(utility::conversions::to_string_t( std::string(std::string("http://127.0.0.1:8529/_db/geo_location/_api/document/devices/") + std::string(deviceId)) )));
 		http_request request(methods::GET);
 		request.headers().add(L"Accept", L"application/json");
-		request.headers().add(L"Autorization", utility::conversions::to_base64(__gps__::self->get_document_db_username + ":" + __gps__::self->get_document_db_userpassword));
+
+		std::string authData = std::string(__gps__::self->get_document_db_username() + ":" + __gps__::self->get_document_db_userpassword());
+		request.headers().add(L"Autorization", utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
+		
 		auto response = client.request(request);
-		return response.get().status_code == status_codes::NotFound ? false : true;
+		return response.get().status_code() == status_codes::NotFound ? false : true;
 	}
 
 	/*

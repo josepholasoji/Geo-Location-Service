@@ -23,10 +23,10 @@ namespace tk103
 	TEST_CLASS(tk103_unittests_withmocks)
 	{
 	public:
-		LPGPS_HANDLERS evenHandlers = nullptr;
+		geolocation_svc::LPGPS_HANDLERS evenHandlers = nullptr;
 
 		TEST_METHOD_INITIALIZE(startup) {
-			evenHandlers = new GPS_HANDLERS();
+			evenHandlers = new geolocation_svc::GPS_HANDLERS();
 			evenHandlers->start_device_feedbacks_logs_job();
 		}
 

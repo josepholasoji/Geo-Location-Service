@@ -76,10 +76,10 @@ struct device_login
 	public:
 		~__gps__();
 		__gps__();
-		void log_feedback(device_feedback* device_feeback);
+		virtual void log_feedback(device_feedback* device_feeback);
 		std::shared_ptr<std::vector<gps*>> search_gps_device_drivers();
 		void start_device_feedbacks_logs_job();
-		bool is_device_registered(const char* deviceId);
+		virtual bool is_device_registered(const char* deviceId);
 
 		std::string get_document_db_username();
 		std::string get_document_db_userpassword();
@@ -95,7 +95,7 @@ struct device_login
 		std::string document_db_username;
 		std::string document_db_userpassword;
 
-		web::http::client::http_client_config client_config_for_proxy(); 
+		web::http::client::http_client_config client_config_for_proxy();
 	};
 
 	//Type defs...

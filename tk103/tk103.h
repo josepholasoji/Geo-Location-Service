@@ -265,7 +265,7 @@ struct _command_message
 
 extern "C"
 {
-	TK103_API  gps* load(LPGPS_HANDLERS);
+	TK103_API  gps* load(geolocation_svc::LPGPS_HANDLERS);
 }
 
 // This class is exported from the tk103.dll
@@ -276,14 +276,14 @@ class Ctk103: public gps {
 	std::string _deviceId;
 	gps_service _gps_service;
 
-	LPGPS_HANDLERS handlers;
+	geolocation_svc::LPGPS_HANDLERS handlers;
 
 	void *zmq_context;
 	void *zmq_in_socket_handle, *zmq_out_socket_handle;
 
 public:
 
-	Ctk103(LPGPS_HANDLERS);
+	Ctk103(geolocation_svc::LPGPS_HANDLERS);
 	~ Ctk103();
 
 	//

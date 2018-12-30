@@ -10,7 +10,7 @@
 
 
 // This is an example of an exported function.
-TK103_API gps* load(LPGPS_HANDLERS handlers)
+TK103_API gps* load(geolocation_svc::LPGPS_HANDLERS handlers)
 {
 	gps* _gps = new Ctk103(handlers);
 	return _gps;
@@ -19,7 +19,7 @@ TK103_API gps* load(LPGPS_HANDLERS handlers)
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
+Ctk103::Ctk103(geolocation_svc::LPGPS_HANDLERS _handlers)
 {
 	this->handlers = _handlers;
 
