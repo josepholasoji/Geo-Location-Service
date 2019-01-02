@@ -1,6 +1,8 @@
-#include "sdk.h"
 #pragma once
+#include "stdafx.h"
 #include "sdk.h"
+#include "NanoLog.hpp"
+#include <boost\locale.hpp>
 
 using namespace utility;
 using namespace web::http;
@@ -12,12 +14,16 @@ namespace geolocation_svc {
 	__gps__* __gps__::self = NULL;
 
 	__gps__::~__gps__() {
-			db.logoff();
+			if (db != NULL && db->connected)
+			{
+				 db->logoff();
+			}			
 		}
 
 	__gps__::__gps__() {
 
 		    __gps__::self = this;
+			db = NULL;
 
 			//start logger
 			// Log will roll to the next file after every 1MB.
@@ -38,23 +44,24 @@ namespace geolocation_svc {
 			publisher->bind("tcp://*:5555");
 			LOG_WARN << "0MQ successfully started on port 5555";
 
-			try {
-				//start connection to sql db
-				otl_connect::otl_initialize(1);
-				db.rlogon("DRIVER={MySQL};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
-				LOG_WARN << "Successfully logged on to DB @ " << "127.0.0.1 as " << "root";
-			}
-			catch (otl_exception& p)
-			{
-				LOG_WARN << (char*)p.msg; // print out error message
-				LOG_WARN << p.code; // print out error code
-				LOG_WARN << p.var_info; // print out the variable that caused the error
-				LOG_WARN << (char*)p.sqlstate; // print out SQLSTATE message
-				LOG_WARN << p.stm_text; // print out SQL that caused the error
-			}
-			catch (std::exception ex) {
-				LOG_WARN << ex.what();
-			}
+			//try {
+			//	//start connection to sql db
+			//	otl_connect::otl_initialize(1);
+			//	db = new otl_connect();
+			//	db->rlogon("DRIVER={MySQL};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
+			//	LOG_WARN << "Successfully logged on to DB @ " << "127.0.0.1 as " << "root";
+			//}
+			//catch (otl_exception& p)
+			//{
+			//	LOG_WARN << (char*)p.msg; // print out error message
+			//	LOG_WARN << p.code; // print out error code
+			//	LOG_WARN << p.var_info; // print out the variable that caused the error
+			//	LOG_WARN << (char*)p.sqlstate; // print out SQLSTATE message
+			//	LOG_WARN << p.stm_text; // print out SQL that caused the error
+			//}
+			//catch (std::exception ex) {
+			//	LOG_WARN << ex.what();
+			//}
 		}
 
 	void __gps__::log_feedback(device_feedback* device_feeback) {
@@ -79,7 +86,11 @@ namespace geolocation_svc {
 			out.put("_dateTime.minute", device_feeback->_dateTime->minute);
 			out.put("_dateTime.month", device_feeback->_dateTime->month);
 			out.put("_dateTime.second", device_feeback->_dateTime->second);
-			out.put("_dateTime.year", device_feeback->_dateTime->year);
+
+			//int year =  std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str()); std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str());
+			std::ostringstream year;
+			year << "2" << std::setw(3) << std::setfill('0') << device_feeback->_dateTime->year;
+			out.put("_dateTime.year", year.str());
 
 			out.put("message_type", "GPS_FEEDBACK_MEESAGE_SQL_COMMIT");
 
@@ -97,6 +108,9 @@ namespace geolocation_svc {
 
 		}
 	}
+	void __gps__::log_feedback(std::string device_feeback_str) {		
+		this->publisher->send(device_feeback_str.c_str(), device_feeback_str.size());
+	}
 
 	std::shared_ptr<std::vector<gps*>> __gps__::search_gps_device_drivers() {
 		auto  gpses = std::make_shared<std::vector<gps*>>();
@@ -104,18 +118,18 @@ namespace geolocation_svc {
 		//Search the plugins directory for service plugins
 		WIN32_FIND_DATA file = { 0 };
 		char path[MAX_PATH] = { 0 };
-		GetCurrentDirectory(MAX_PATH, (LPSTR)path);
+		GetCurrentDirectory(MAX_PATH, (LPWSTR)path);
 
 		LOG_WARN << "Searching for GPS files...";
 
-		HANDLE search_handle = FindFirstFile("services\\*.gps", &file);
+		HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
 		if (search_handle) {
 			do {
 				//load each dynamically...
-				auto gpsfile = std::string("services\\").append(file.cFileName);
-				//LOG_WARN << "Found GPS file @ " << gpsfile.c_str();
+				auto gpsfile = std::wstring(L"services\\").append(file.cFileName);
+				LOG_WARN << "Found GPS file @ " << boost::locale::conv::utf_to_utf<char>(gpsfile);
 
-				HINSTANCE hGetProcIDDLL = LoadLibrary((LPCSTR)gpsfile.c_str());
+				HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)gpsfile.c_str());
 
 				if (!hGetProcIDDLL) {
 					std::cout << "could not load the GPS service file" << std::endl;
@@ -141,7 +155,7 @@ namespace geolocation_svc {
 	}
 
 	void __gps__::start_device_feedbacks_logs_job() {
-		otl_connect* db_addr = &this->db;
+		otl_connect* db_addr = this->db;
 		std::tuple<zmq::context_t*, otl_connect*> *log_params = new std::tuple<zmq::context_t*, otl_connect*>(context, db_addr);
 
 		_beginthread([](void* params)->void {
@@ -178,53 +192,18 @@ namespace geolocation_svc {
 
 				// Create an HTTP request.
 				// Encode the URI query since it could contain special characters like spaces.
-				http_client client(U("http://127.0.0.1:8529/_db/geo_location/_api/document/logs/"));
+				http_client client(U("http://127.0.0.1:8529/_db/geo_location/_api/document/logs"));
 				http_request request(methods::POST);
 				request.headers().add(L"Content-type", L"application/json");
 
-				std::string authData = std::string(__gps__::self->get_document_db_username() + ":" + __gps__::self->get_document_db_userpassword());
-				request.headers().add(L"Autorization", utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
-				request.set_body(web::json::value(str.c_str()));
+				std::string authData = std::string(__gps__::self->get_document_db_username().append(":").append(__gps__::self->get_document_db_userpassword()));
+				request.headers().add(L"Authorization", std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
+				request.set_body(str);
 
 				auto response = client.request(request)
 					.then([str](http_response response) {
 					if (response.status_code() != status_codes::Accepted && response.status_code() != status_codes::Created) {
-
-						boost::property_tree::ptree root;
-						std::istringstream is(str);
-						read_json(is, root);
-
-						device_feedback *device_feeback = (device_feedback *)malloc(sizeof(device_feedback));
-						device_feeback->acc_ignition_on = root.get<double>("acc_ignition_on", 0);
-
-						strcpy_s(device_feeback->deviceId, sizeof(device_feeback->deviceId), root.get<std::string>("deviceId").c_str());
-											   
-						device_feeback->dlat = root.get<double>("dlat", 0);
-						device_feeback->dlon = root.get<double>("dlon", 0);
-						device_feeback->dmile_data = root.get<double>("dmile_data", 0);
-						device_feeback->dorientation = root.get<double>("dorientation", 0);
-						device_feeback->dspeed = root.get<double>("dspeed", 0);
-						device_feeback->main_power_switch_on = root.get<int>("main_power_switch_on", 0);
-
-						datetime* _datetime = (datetime *)malloc(sizeof(datetime));
-						_datetime->hour = root.get<int>("_dateTime.hour", 0);
-						_datetime->day = root.get<int>("_dateTime.day", 0);
-						_datetime->minute = root.get<int>("_dateTime.minute", 0);
-						_datetime->month = root.get<int>("_dateTime.month", 0);
-						_datetime->second = root.get<int>("_dateTime.second", 0);
-						_datetime->year = root.get<int>("_dateTime.year", 0);
-						device_feeback->_dateTime = _datetime;
-
-						//save the location details
-						otl_datetime _dateTime;
-						_dateTime.day = device_feeback->_dateTime->day;
-						_dateTime.month = device_feeback->_dateTime->month;
-						_dateTime.year = std::atoi(std::string((device_feeback->_dateTime->year < 10 ? "200" : "20") + std::to_string(device_feeback->_dateTime->year)).c_str());
-						_dateTime.hour = device_feeback->_dateTime->hour;
-						_dateTime.minute = device_feeback->_dateTime->minute;
-						_dateTime.second = device_feeback->_dateTime->second;
-
-						__gps__::self->log_feedback(device_feeback);
+						__gps__::self->log_feedback(str);
 					}
 				});
 			}
@@ -237,10 +216,11 @@ namespace geolocation_svc {
 		request.headers().add(L"Accept", L"application/json");
 
 		std::string authData = std::string(__gps__::self->get_document_db_username() + ":" + __gps__::self->get_document_db_userpassword());
-		request.headers().add(L"Autorization", utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
+		request.headers().add(L"Authorization", std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
 		
 		auto response = client.request(request);
-		return response.get().status_code() == status_codes::NotFound ? false : true;
+		auto status_code = response.get().status_code();
+		return status_code == status_codes::OK ? true : false;
 	}
 
 	/*
@@ -275,10 +255,10 @@ namespace geolocation_svc {
 	}
 
 	std::string __gps__::get_document_db_username() {
-		return this->document_db_username;
+		return /*this->document_db_username =*/ "imo";
 	}
 
 	std::string __gps__::get_document_db_userpassword() {
-		return this->document_db_userpassword;
+		return /*this->document_db_userpassword =*/ "password";
 	}
 };

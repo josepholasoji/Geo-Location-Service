@@ -56,13 +56,7 @@
     <ClCompile Include="gps_message_body.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mongodb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gps_service.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sdk\NanoLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\sdk\stdafx.cpp">

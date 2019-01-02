@@ -22,9 +22,9 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
+#define GLS_EXPORTS
 
-
-#include "NanoLog.hpp"
+#include "../sdk/NanoLog.hpp"
 #include <cstring>
 #include <chrono>
 #include <ctime>
@@ -115,7 +115,7 @@ namespace nanolog
 	encode < Arg >(arg);
     }
 
-    NanoLogLine::NanoLogLine(LogLevel level, char const * file, char const * function, uint32_t line)
+	NanoLogLine::NanoLogLine(LogLevel level, char const * file, char const * function, uint32_t line)
 	: m_bytes_used(0)
 	, m_buffer_size(sizeof(m_stack_buffer))
     {
@@ -696,12 +696,12 @@ namespace nanolog
 
     std::atomic < unsigned int > loglevel = {0};
 
-    void set_log_level(LogLevel level)
+	GLS_API void set_log_level(LogLevel level)
     {
 	loglevel.store(static_cast<unsigned int>(level), std::memory_order_release);
     }
 
-    bool is_logged(LogLevel level)
+	GLS_API bool is_logged(LogLevel level)
     {
 	return static_cast<unsigned int>(level) >= loglevel.load(std::memory_order_relaxed);
     }
