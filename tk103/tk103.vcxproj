@@ -42,7 +42,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -173,7 +173,6 @@
     <ClInclude Include="tk103.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\sdk\NanoLog.cpp" />
     <ClCompile Include="..\sdk\stdafx.cpp" />
     <ClCompile Include="data_structure.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -192,7 +191,6 @@
     </ClCompile>
     <ClCompile Include="gps_message_body.cpp" />
     <ClCompile Include="gps_service.cpp" />
-    <ClCompile Include="mongodb.cpp" />
     <ClCompile Include="tk103.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

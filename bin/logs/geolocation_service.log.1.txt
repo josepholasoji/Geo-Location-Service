@@ -1,0 +1,4 @@
+[1970-01-05 09:38:48.952785][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:40] Starting MQ on port 5555
+[1970-01-05 09:38:49.026456][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:45] 0MQ successfully started on port 5555
+[1970-01-05 09:38:49.026595][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:search_gps_device_drivers:116] Searching for GPS files...
+[1970-01-05 09:38:49.026952][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:search_gps_device_drivers:123] Found GPS file @ services\tk103.gps

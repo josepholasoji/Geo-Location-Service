@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GtaTestDurations xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Executable>C:\Super\Geo-Location-Service\testbin\tk103_tests\tk103_tests.exe</Executable>
+  <TestDurations>
+    <TestDuration Test="TK103FunctionalityTests.convertHexValuesToAscii" Duration="1" />
+    <TestDuration Test="TK103FunctionalityTests.testTK103DataProcessor" Duration="1" />
+    <TestDuration Test="TK103FunctionalityTests.testTK103DeviceLogin" Duration="25" />
+    <TestDuration Test="TK103FunctionalityTests.testTK103DeviceHandshake" Duration="5" />
+    <TestDuration Test="TK103FunctionalityTests.testTK103DeviceFeedbackMessage" Duration="6004" />
+    <TestDuration Test="TK103FunctionalityTests.testTK103DeviceFeedbacEndingMessage" Duration="6003" />
+  </TestDurations>
+</GtaTestDurations>
