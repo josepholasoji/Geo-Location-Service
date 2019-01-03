@@ -10,7 +10,7 @@
 class gps_service
 {
 private:
-	LPGPS_HANDLERS handlers;
+   geolocation_svc::LPGPS_HANDLERS handlers;
 
 public:
 	gps_service();
@@ -23,6 +23,6 @@ public:
 	const char* deviceFeedback(data_payload_from_device*  deviceData);
 	const char* deviceFeedbackEnding(data_payload_from_device*  deviceData);
 	const char* deviceHandshake(data_payload_from_device*  deviceData);
-	void set_handlers(LPGPS_HANDLERS);
+	void set_handlers(geolocation_svc::LPGPS_HANDLERS);
 };
 

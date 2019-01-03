@@ -21,9 +21,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\sdk\NanoLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geo_location_svc.h">
@@ -35,7 +32,10 @@
     <ClInclude Include="session.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\sdk\NanoLog.hpp">
+    <ClInclude Include="..\sdk\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk\targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

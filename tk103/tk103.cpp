@@ -1,5 +1,6 @@
 // tk103.cpp : Defines the exported functions for the DLL application.
 //
+#include "../sdk/stdafx.h"
 #include "tk103.h"
 #include "../sdk/data_payload_from_device.h"
 #include "../sdk/data_downstream.h"
@@ -10,7 +11,7 @@
 
 
 // This is an example of an exported function.
-TK103_API gps* load(LPGPS_HANDLERS handlers)
+TK103_API gps* load(geolocation_svc::LPGPS_HANDLERS handlers)
 {
 	gps* _gps = new Ctk103(handlers);
 	return _gps;
@@ -19,7 +20,7 @@ TK103_API gps* load(LPGPS_HANDLERS handlers)
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103(LPGPS_HANDLERS _handlers)
+Ctk103::Ctk103(geolocation_svc::LPGPS_HANDLERS _handlers)
 {
 	this->handlers = _handlers;
 
@@ -251,7 +252,7 @@ gps * Ctk103::detect(char *, int)
 
 short int Ctk103::serverPort()
 {
-	return 2701;
+	return 2772;
 }
 
 const char* Ctk103::deviceName()
