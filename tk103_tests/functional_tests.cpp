@@ -12,6 +12,8 @@
 geolocation_svc::LPGPS_HANDLERS sdkHandle = NULL;
 Ctk103* _gps = NULL;
 
+
+
 class TK103FunctionalityTests: public testing::Test {
 
 public:

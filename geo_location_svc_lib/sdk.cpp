@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "sdk.h"
 #include "NanoLog.hpp"
+#include "yaml-cpp\yaml.h"
 #include <boost\locale.hpp>
 
 using namespace utility;
@@ -25,6 +26,30 @@ namespace geolocation_svc {
 		    __gps__::self = this;
 			db = NULL;
 
+			//Load configurations
+			try {
+				YAML::Node config = YAML::LoadFile("config/application.properties");
+				document_db_username = config["db.document.datasource.username"].as<std::string>();
+				document_db_userpassword = config["db.document.datasource.password"].as<std::string>();
+				document_db_host = config["db.document.datasource.host"].as<std::string>();
+				document_db_database_name = config["db.document.datasource.db"].as<std::string>();
+				document_db_databse_port = config["db.document.datasource.port"].as<int>();
+
+				db_userpassword = config["db.datasource.password"].as<std::string>();
+				db_username = config["db.datasource.username"].as<std::string>();
+				db_url = config["db.datasource.url"].as<std::string>();
+
+				message_queue_port = config["message.queue.port"].as<int>();
+				message_queue_host = config["message.queue.host"].as<std::string>();
+				message_queue_username = config["message.queue.username"].as<std::string>();
+				message_queue_password = config["message.queue.password"].as<std::string>();
+			}
+			catch (YAML::Exception yml_exception) {
+				printf(std::string("Startup error, Error loading config file: " +  yml_exception.msg).c_str());
+				return;
+			}
+
+
 			//start logger
 			// Log will roll to the next file after every 1MB.
 			nanolog::initialize(nanolog::GuaranteedLogger(), "logs/", "geolocation_service.log", 10);
@@ -37,31 +62,34 @@ namespace geolocation_svc {
 			LOG_INFO << "Current 0MQ version is" << major << "." << minor << "." << patch;
 
 			//Start zero mq
-			LOG_WARN << "Starting MQ on port 5555";
+			LOG_WARN << "Starting MQ on port " << message_queue_host << ":" << message_queue_port;
 			context = new zmq::context_t(1);
 			publisher = new zmq::socket_t(*context, ZMQ_PUB);
 			publisher->setsockopt(ZMQ_LINGER, 0);
-			publisher->bind("tcp://*:5555");
-			LOG_WARN << "0MQ successfully started on port 5555";
 
-			//try {
-			//	//start connection to sql db
-			//	otl_connect::otl_initialize(1);
-			//	db = new otl_connect();
-			//	db->rlogon("DRIVER={MySQL};SERVER=127.0.0.1;PORT=3306;DATABASE=geolocation_service;USER=root;PASSWORD=;");
-			//	LOG_WARN << "Successfully logged on to DB @ " << "127.0.0.1 as " << "root";
-			//}
-			//catch (otl_exception& p)
-			//{
-			//	LOG_WARN << (char*)p.msg; // print out error message
-			//	LOG_WARN << p.code; // print out error code
-			//	LOG_WARN << p.var_info; // print out the variable that caused the error
-			//	LOG_WARN << (char*)p.sqlstate; // print out SQLSTATE message
-			//	LOG_WARN << p.stm_text; // print out SQL that caused the error
-			//}
-			//catch (std::exception ex) {
-			//	LOG_WARN << ex.what();
-			//}
+			std::stringstream bind_fmt;
+			bind_fmt << "tcp://" << message_queue_host <<":" << message_queue_port;
+			publisher->bind(bind_fmt.str());
+			LOG_WARN << "0MQ successfully started on port " << message_queue_host << ":" << message_queue_port;
+
+			try {
+				//start connection to sql db
+				otl_connect::otl_initialize(1);
+				db = new otl_connect();
+				db->rlogon(db_url.c_str());
+				LOG_WARN << "Successfully logged on to DB @ " << "127.0.0.1 as " << "root";
+			}
+			catch (otl_exception& p)
+			{
+				LOG_WARN << (char*)p.msg; // print out error message
+				LOG_WARN << p.code; // print out error code
+				LOG_WARN << p.var_info; // print out the variable that caused the error
+				LOG_WARN << (char*)p.sqlstate; // print out SQLSTATE message
+				LOG_WARN << p.stm_text; // print out SQL that caused the error
+			}
+			catch (std::exception ex) {
+				LOG_WARN << ex.what();
+			}
 		}
 
 	void __gps__::log_feedback(device_feedback* device_feeback) {
@@ -192,7 +220,10 @@ namespace geolocation_svc {
 
 				// Create an HTTP request.
 				// Encode the URI query since it could contain special characters like spaces.
-				http_client client(U("http://127.0.0.1:8529/_db/geo_location/_api/document/logs"));
+				std::stringstream URL_fmt;
+				URL_fmt << "http://" <<  __gps__::self->get_document_db_host() << ":" << __gps__::self->get_document_db_database_port() << "/_db/" << __gps__::self->get_document_db_database_name() <<"/_api/document/logs";
+
+				http_client client(utility::conversions::to_string_t(URL_fmt.str()));
 				http_request request(methods::POST);
 				request.headers().add(L"Content-type", L"application/json");
 
@@ -255,10 +286,22 @@ namespace geolocation_svc {
 	}
 
 	std::string __gps__::get_document_db_username() {
-		return /*this->document_db_username =*/ "imo";
+		return this->document_db_username;
 	}
 
 	std::string __gps__::get_document_db_userpassword() {
-		return /*this->document_db_userpassword =*/ "password";
+		return this->document_db_userpassword;
+	}
+
+	std::string __gps__::get_document_db_host() {
+		return this->document_db_host;
+	}
+
+	std::string __gps__::get_document_db_database_name() {
+		return this->document_db_database_name;
+	}
+
+	int __gps__::get_document_db_database_port() {
+		return this->document_db_databse_port;
 	}
 };

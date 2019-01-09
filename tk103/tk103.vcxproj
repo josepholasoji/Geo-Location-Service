@@ -116,13 +116,13 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;TK103_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp14</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)../include;C:\Boost\include\boost-1_67</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../include;C:\boost</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\boost_1_67_0\stage\lib;C:\Program Files\ZeroMQ 4.0.4\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\boost\stage\x64\lib;C:\Program Files\ZeroMQ 4.0.4\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

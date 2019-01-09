@@ -50,12 +50,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\geo_location_svc_lib\geo_location_svc_lib.vcxproj">
-      <Project>{3456df8f-c01e-4d9c-b058-9edd11a9c798}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\tk103\tk103.vcxproj">
       <Project>{f590249f-7523-4c6b-894e-ce3fc0dd41ce}</Project>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
@@ -65,10 +59,13 @@
   <ItemGroup>
     <ResourceCompile Include="tk103_tests.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
+    <Import Project="..\packages\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,12 +93,12 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)../include;C:\Boost\include\boost-1_67;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../include;C:\GoogleTest\include;C:\Boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>C:\Program Files\ZeroMQ 4.0.4\lib;$(ProjectDir)../lib;C:\boost_1_67_0\stage\lib;$(SolutionDir)/bin;$(SolutionDir)/bin/services;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\GoogleTest\lib;C:\Program Files\ZeroMQ 4.0.4\lib;$(ProjectDir)../lib;C:\boost\stage\x64\lib;$(SolutionDir)/bin;$(SolutionDir)/bin/services;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>geo_location_svc_lib.lib;cpprest141_2_10d.lib;libzmq.lib;common_utilitiesd.lib;tk103.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
@@ -113,8 +110,8 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)bin\*.dll $(SolutionDir)testbin\tk103_tests /y /d
-xcopy $(SolutionDir)bin\services\tk103.gps $(SolutionDir)testbin\tk103_tests /y /d
+      <Command>xcopy $(SolutionDir)bin\*.dll $(SolutionDir)bin\tests\tk103_tests /y /d
+xcopy $(SolutionDir)bin\services\tk103.gps $(SolutionDir)bin\tests\tk103_tests /y /d
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -154,6 +151,6 @@ xcopy $(SolutionDir)bin\services\tk103.gps $(SolutionDir)testbin\tk103_tests /y 
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
   </Target>
 </Project>

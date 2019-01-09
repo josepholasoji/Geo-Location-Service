@@ -116,10 +116,29 @@ struct device_login
 
 		std::string document_db_username;
 		std::string document_db_userpassword;
+		std::string document_db_host;
+		std::string document_db_database_name;
+		int document_db_databse_port;
+
+		std::string db_userpassword;
+		std::string db_username;
+		std::string db_url;
+
+		int message_queue_port;
+		std::string message_queue_host;
+		std::string message_queue_username;
+		std::string message_queue_password;
+
+
 
 		web::http::client::http_client_config client_config_for_proxy();
+		
+		//Accessors
 		std::string get_document_db_username();
 		std::string get_document_db_userpassword();
+		std::string get_document_db_host();
+		std::string get_document_db_database_name();
+		int get_document_db_database_port();
 	};
 
 	//Typedefs...

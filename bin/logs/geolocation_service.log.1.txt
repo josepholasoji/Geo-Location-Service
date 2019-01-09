@@ -1,4 +1,9 @@
-[1970-01-05 09:38:48.952785][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:40] Starting MQ on port 5555
-[1970-01-05 09:38:49.026456][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:45] 0MQ successfully started on port 5555
-[1970-01-05 09:38:49.026595][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:search_gps_device_drivers:116] Searching for GPS files...
-[1970-01-05 09:38:49.026952][WARN][158696][c:\super\geo-location-service\geo_location_svc_lib\sdk.cpp:search_gps_device_drivers:123] Found GPS file @ services\tk103.gps
+[1970-01-05 04:38:28.016474][WARN][7784][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:65] Starting MQ on port 127.0.0.1:555
+[1970-01-05 04:38:28.062385][WARN][7784][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:73] 0MQ successfully started on port 127.0.0.1:555
+[1970-01-05 04:38:36.486365][WARN][7784][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:__gps__:80] Successfully logged on to DB @ 127.0.0.1 as root
+[1970-01-05 04:38:40.368238][WARN][7784][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:search_gps_device_drivers:151] Searching for GPS files...
+[1970-01-05 04:38:40.368545][WARN][7784][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:search_gps_device_drivers:158] Found GPS file @ services\tk103.gps
+[1970-01-05 04:38:42.883605][WARN][17552][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:operator ():191] Starting the device feedback logger...
+[1970-01-05 04:38:42.871966][WARN][7784][c:\super\programming\applications\geo-location-service\geo_location\main.cpp:main:26] Starting device services for TK103 @ 2772
+[1970-01-05 04:38:42.895480][WARN][17552][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:operator ():196] Starting the device feedback logger Queue...
+[1970-01-05 04:38:47.243610][WARN][17552][c:\super\programming\applications\geo-location-service\geo_location_svc_lib\sdk.cpp:operator ():207] Device feedback logger queue started on port: 5555
