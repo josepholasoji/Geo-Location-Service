@@ -3,18 +3,8 @@
 #include "zmq.hpp"
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <dlfcn.h>
-#include <dirent.h>
-#include <pthread.h>
-#define OTL_ODBC_UNIX
 
-#define UNICODE
-#define OTL_ODBC
-#define OTL_ODBC_SELECT_STM_EXECUTE_BEFORE_DESCRIBE
-#define OTL_ODBC_MYSQL
-#define OTL_STREAM_POOLING_ON
-#define OTL_STL
-#define OTL_ODBC_MULTI_MODE
+
 
 #include "otlv4.h"
 #include "NanoLog.hpp"
@@ -306,9 +296,40 @@ struct __gps__ {
 		return false;
 	}
 
-	otl_connect db;
-	zmq::socket_t* publisher;
-	zmq::context_t* context;
+	private:
+		static __gps__* self;
+		otl_connect* db;
+		const char dir_path[6] = { "./gps" };
+		zmq::socket_t* publisher;
+		zmq::context_t* context;
+		std::shared_ptr<std::vector<gps*>> vgpses;
+
+		std::string document_db_username;
+		std::string document_db_userpassword;
+		std::string document_db_host;
+		std::string document_db_database_name;
+		int document_db_databse_port;
+
+		std::string db_userpassword;
+		std::string db_username;
+		std::string db_url;
+
+		int message_queue_port;
+		std::string message_queue_host;
+		std::string message_queue_username;
+		std::string message_queue_password;
+
+
+
+		web::http::client::http_client_config client_config_for_proxy();
+
+		//Accessors
+		std::string get_document_db_username();
+		std::string get_document_db_userpassword();
+		std::string get_document_db_host();
+		std::string get_document_db_database_name();
+		int get_document_db_database_port();
 };
 
-typedef struct __gps__ GPS_HANDLERS, *LPGPS_HANDLERS;
+//Typedefs...
+typedef class __gps__ GPS_HANDLERS, *LPGPS_HANDLERS;

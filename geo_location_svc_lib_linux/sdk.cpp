@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+
 #include "sdk.h"
 #include "NanoLog.hpp"
 #include "yaml-cpp\yaml.h"
@@ -143,42 +143,48 @@ namespace geolocation_svc {
 	std::shared_ptr<std::vector<gps*>> __gps__::search_gps_device_drivers() {
 		auto  gpses = std::make_shared<std::vector<gps*>>();
 
-		//Search the plugins directory for service plugins
-		WIN32_FIND_DATA file = { 0 };
-		char path[MAX_PATH] = { 0 };
-		GetCurrentDirectory(MAX_PATH, (LPWSTR)path);
+		struct dirent **namelist;
+		int n = scandir("services", &namelist, [](const struct dirent *entry)->int {
+			if (std::string(entry->d_name).find(".gps") != std::string::npos) {
+				return true;
+			}
 
-		LOG_WARN << "Searching for GPS files...";
+			return false;
+		}, alphasort);
 
-		HANDLE search_handle = FindFirstFile(L"services\\*.gps", &file);
-		if (search_handle) {
-			do {
-				//load each dynamically...
-				auto gpsfile = std::wstring(L"services\\").append(file.cFileName);
-				LOG_WARN << "Found GPS file @ " << boost::locale::conv::utf_to_utf<char>(gpsfile);
+		if (n < 0)
+			perror("scandir");
+		else {
+			for (int i = 0; i < n; i++) {
+				auto gpsfile = std::string("services/").append(namelist[i]->d_name);
+				LOG_WARN << "Found GPS file @ " << gpsfile;
 
-				HINSTANCE hGetProcIDDLL = LoadLibrary((LPCWSTR)gpsfile.c_str());
-
-				if (!hGetProcIDDLL) {
-					std::cout << "could not load the GPS service file" << std::endl;
-					LOG_WARN << "could not load the GPS service file";
+				void* handle = dlopen(gpsfile.c_str(), RTLD_LAZY);
+				if (!handle) {
+					cerr << "Cannot open library: " << dlerror() << '\n';
+					LOG_WARN << "Cannot open library: " << dlerror() << '\n';
 					return gpses;
 				}
 
-				// resolve function address here
-				//LOG_WARN << "Loading GPS file: " << gpsfile;
-				f_load load = (f_load)GetProcAddress(hGetProcIDDLL, "load");
-				if (!load) {
-					std::cout << "could not locate the function" << std::endl;
-					LOG_WARN << "could not locate the function";
+				// reset errors
+				dlerror();
+				LOG_WARN << "Loading GPS file: " << gpsfile;
+				f_load load = (f_load)dlsym(handle, "load");
+				const char *dlsym_error = dlerror();
+				if (dlsym_error) {
+					cerr << "Cannot load symbol 'load' from " << namelist[i]->d_name << "; " << dlsym_error << '\n';
+					LOG_WARN << "Cannot load symbol 'load' from " << namelist[i]->d_name << "; " << dlsym_error << '\n';
+
+					dlclose(handle);
 					return gpses;
 				}
 
 				gpses->push_back(load(this));
-			} while (FindNextFile(search_handle, &file));
-			FindClose(search_handle);
+				free(namelist[i]);
+			}
 		}
 
+		free(namelist);
 		return gpses;
 	}
 
@@ -206,6 +212,7 @@ namespace geolocation_svc {
 			subscriber->setsockopt(ZMQ_SUBSCRIBE, filter, strlen(filter));
 			LOG_WARN << "Device feedback logger queue started on port: 5555";
 
+			auto basicAuth = std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end()));
 			while (true)
 			{
 				//recieve the 0MQ message
@@ -259,14 +266,10 @@ namespace geolocation_svc {
 	{
 		web::http::client::http_client_config client_config;
 
-		wchar_t* pValue = nullptr;
-		std::unique_ptr<wchar_t, void(*)(wchar_t*)> holder(nullptr, [](wchar_t* p) { free(p); });
-		size_t len = 0;
-		auto err = _wdupenv_s(&pValue, &len, L"http_proxy");
-		if (pValue) holder.reset(pValue);
-		if (!err && pValue && len)
+		if (const char* env_http_proxy = std::getenv("http_proxy"))
 		{
-			std::wstring env_http_proxy_string(pValue, len - 1);
+			std::string env_http_proxy_string(env_http_proxy);
+
 			if (env_http_proxy_string == U("auto"))
 				client_config.set_proxy(web::web_proxy::use_auto_discovery);
 			else

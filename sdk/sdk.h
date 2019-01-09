@@ -5,7 +5,6 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <process.h>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -13,6 +12,19 @@
 
 #include "../include/cpprest/filestream.h"
 #include "../include/cpprest/http_client.h"
+
+#if defined(_MSC_VER)
+	#include <process.h>
+
+	#define UNICODE
+#else
+	#include <dlfcn.h>
+	#include <dirent.h>
+	#include <pthread.h>
+
+	#define OTL_ODBC_UNIX
+
+#endif
 
 #define OTL_ODBC
 #define OTL_ODBC_SELECT_STM_EXECUTE_BEFORE_DESCRIBE
@@ -45,13 +57,13 @@ using namespace concurrency::streams;
 		#define GLS_API __declspec(dllexport)
 	#else
 		#define GLS_API 
-	#endif // defined(WINDOW) && (_MSC_VER)
+	#endif 
 	#else
 	#if defined(_MSC_VER)
 		#define GLS_API __declspec(dllimport)
 	#else
 		#define GLS_API 
-	#endif // defined(WINDOW) && (_MSC_VER)
+	#endif 
 #endif
 
 
@@ -139,6 +151,9 @@ struct device_login
 		std::string get_document_db_host();
 		std::string get_document_db_database_name();
 		int get_document_db_database_port();
+
+		std::wstring basic_auth_data;
+		std::wstring get_basic_auth_data();
 	};
 
 	//Typedefs...

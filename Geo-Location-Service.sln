@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{97CBDE7D-817
 		sdk\NanoLog.hpp = sdk\NanoLog.hpp
 		sdk\otlv4.h = sdk\otlv4.h
 		sdk\sdk.h = sdk\sdk.h
-		sdk\sdk_linux.h = sdk\sdk_linux.h
 		sdk\stdafx.h = sdk\stdafx.h
 		sdk\Utils.h = sdk\Utils.h
 		sdk\zmq.h = sdk\zmq.h
@@ -34,6 +33,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tk103_tests", "tk103_tests\tk103_tests.vcxproj", "{A59C9362-27A4-4D51-ABAA-C1CD690532EF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc_lib", "geo_location_svc_lib\geo_location_svc_lib.vcxproj", "{3456DF8F-C01E-4D9C-B058-9EDD11A9C798}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "geo_location_svc_lib_linux", "geo_location_svc_lib_linux\geo_location_svc_lib_linux.vcxproj", "{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +140,22 @@ Global
 		{3456DF8F-C01E-4D9C-B058-9EDD11A9C798}.Release|x64.Build.0 = Release|x64
 		{3456DF8F-C01E-4D9C-B058-9EDD11A9C798}.Release|x86.ActiveCfg = Release|Win32
 		{3456DF8F-C01E-4D9C-B058-9EDD11A9C798}.Release|x86.Build.0 = Release|Win32
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|ARM.ActiveCfg = Debug|ARM
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|ARM.Build.0 = Debug|ARM
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|ARM64.Build.0 = Debug|ARM64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|x64.ActiveCfg = Debug|x64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|x64.Build.0 = Debug|x64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|x86.ActiveCfg = Debug|x86
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Debug|x86.Build.0 = Debug|x86
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|ARM.ActiveCfg = Release|ARM
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|ARM.Build.0 = Release|ARM
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|ARM64.ActiveCfg = Release|ARM64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|ARM64.Build.0 = Release|ARM64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|x64.ActiveCfg = Release|x64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|x64.Build.0 = Release|x64
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|x86.ActiveCfg = Release|x86
+		{FB876468-F8A6-4110-8A1C-0BAF5C9C0F3D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
