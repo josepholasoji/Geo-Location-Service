@@ -299,7 +299,7 @@ namespace geolocation_svc {
 	std::wstring __gps__::get_basic_auth_data() {
 		if (this->basic_auth_data.empty()) {
 			std::string authData = std::string(this->get_document_db_username() + ":" + this->get_document_db_userpassword());
-			this->basic_auth_data = std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
+			this->basic_auth_data = std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end()));
 		}
 
 		return this->basic_auth_data;

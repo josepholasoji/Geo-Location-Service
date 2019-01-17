@@ -1,10 +1,11 @@
 #pragma once
 
-#include "sdk.h"
-#include "NanoLog.hpp"
-#include "yaml-cpp\yaml.h"
-#include <boost\locale.hpp>
+#include "../sdk/sdk.h"
+#include "../sdk/NanoLog.hpp"
+#include "yaml-cpp/yaml.h"
+#include <boost/locale.hpp>
 
+using namespace std;
 using namespace utility;
 using namespace web::http;
 using namespace web::http::client;
@@ -161,7 +162,7 @@ namespace geolocation_svc {
 
 				void* handle = dlopen(gpsfile.c_str(), RTLD_LAZY);
 				if (!handle) {
-					cerr << "Cannot open library: " << dlerror() << '\n';
+					std::cerr << "Cannot open library: " << dlerror() << '\n';
 					LOG_WARN << "Cannot open library: " << dlerror() << '\n';
 					return gpses;
 				}
@@ -172,7 +173,7 @@ namespace geolocation_svc {
 				f_load load = (f_load)dlsym(handle, "load");
 				const char *dlsym_error = dlerror();
 				if (dlsym_error) {
-					cerr << "Cannot load symbol 'load' from " << namelist[i]->d_name << "; " << dlsym_error << '\n';
+					std::cerr << "Cannot load symbol 'load' from " << namelist[i]->d_name << "; " << dlsym_error << '\n';
 					LOG_WARN << "Cannot load symbol 'load' from " << namelist[i]->d_name << "; " << dlsym_error << '\n';
 
 					dlclose(handle);
@@ -192,7 +193,7 @@ namespace geolocation_svc {
 		otl_connect* db_addr = this->db;
 		std::tuple<zmq::context_t*, otl_connect*> *log_params = new std::tuple<zmq::context_t*, otl_connect*>(context, db_addr);
 
-		_beginthread([](void* params)->void {
+		boost::thread t{ [](void* params) {
 
 			LOG_WARN << "Starting the device feedback logger...";
 			std::tuple<zmq::context_t*, otl_connect*>* tp = (std::tuple<zmq::context_t*, otl_connect*>*)params;
@@ -212,7 +213,6 @@ namespace geolocation_svc {
 			subscriber->setsockopt(ZMQ_SUBSCRIBE, filter, strlen(filter));
 			LOG_WARN << "Device feedback logger queue started on port: 5555";
 
-			auto basicAuth = std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end()));
 			while (true)
 			{
 				//recieve the 0MQ message
@@ -228,12 +228,12 @@ namespace geolocation_svc {
 				// Create an HTTP request.
 				// Encode the URI query since it could contain special characters like spaces.
 				std::stringstream URL_fmt;
-				URL_fmt << "http://" <<  __gps__::self->get_document_db_host() << ":" << __gps__::self->get_document_db_database_port() << "/_db/" << __gps__::self->get_document_db_database_name() <<"/_api/document/logs";
+				URL_fmt << "http://" << __gps__::self->get_document_db_host() << ":" << __gps__::self->get_document_db_database_port() << "/_db/" << __gps__::self->get_document_db_database_name() << "/_api/document/logs";
 
 				http_client client(utility::conversions::to_string_t(URL_fmt.str()));
 				http_request request(methods::POST);
-				request.headers().add(L"Content-type", L"application/json");
-				request.headers().add(L"Authorization", __gps__::self->get_basic_auth_data());
+				request.headers().add("Content-type", "application/json");
+				request.headers().add("Authorization", __gps__::self->get_basic_auth_data());
 				request.set_body(str);
 
 				auto response = client.request(request)
@@ -243,14 +243,14 @@ namespace geolocation_svc {
 					}
 				});
 			}
-		}, 1024, (void*)log_params);
+		}, (void*)log_params };
 	}
 
 	bool __gps__::is_device_registered(const char* deviceId) {
 		http_client client(web::uri(utility::conversions::to_string_t( std::string(std::string("http://127.0.0.1:8529/_db/geo_location/_api/document/devices/") + std::string(deviceId)) )));
 		http_request request(methods::GET);
-		request.headers().add(L"Accept", L"application/json");
-		request.headers().add(L"Authorization", this->get_basic_auth_data());
+		request.headers().add("Accept", "application/json");
+		request.headers().add("Authorization", this->get_basic_auth_data());
 		
 		auto response = client.request(request);
 		auto status_code = response.get().status_code();
@@ -299,10 +299,10 @@ namespace geolocation_svc {
 		return this->document_db_databse_port;
 	}
 
-	std::wstring __gps__::get_basic_auth_data() {
+	std::string __gps__::get_basic_auth_data() {
 		if (this->basic_auth_data.empty()) {
 			std::string authData = std::string(this->get_document_db_username() + ":" + this->get_document_db_userpassword());
-			this->basic_auth_data = std::wstring(L"Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end())));
+			this->basic_auth_data = std::string("Basic ") + utility::conversions::to_base64(std::vector<unsigned char>(authData.begin(), authData.end()));
 		}
 
 		return this->basic_auth_data;

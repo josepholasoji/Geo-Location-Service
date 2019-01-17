@@ -1,29 +1,33 @@
 #pragma once
-#include "stdafx.h"
+#if defined(_MSC_VER)
+	#include "stdafx.h"
+#endif
+
 #include <memory>
 #include <exception>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <string>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/thread.hpp>
 
 #include "../include/cpprest/filestream.h"
 #include "../include/cpprest/http_client.h"
 
 #if defined(_MSC_VER)
-	#include <process.h>
-
 	#define UNICODE
+
+	#include <process.h>
 #else
 	#include <dlfcn.h>
 	#include <dirent.h>
 	#include <pthread.h>
 
 	#define OTL_ODBC_UNIX
-
 #endif
 
 #define OTL_ODBC
@@ -46,24 +50,24 @@ using namespace web::http;
 using namespace web::http::client;
 using namespace concurrency::streams;
 
-// The following ifdef block is the standard way of creating macros which make exporting 
+// The following ifdef block is the standard way of creating macros which make exporting
 // from a DLL simpler. All files within this DLL are compiled with the GLS_EXPORTS
 // symbol defined on the command line. This symbol should not be defined on any project
-// that uses this DLL. This way any other project whose source files include this file see 
+// that uses this DLL. This way any other project whose source files include this file see
 // GLS_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
 #ifdef GLS_EXPORTS
 	#if defined(_MSC_VER)
 		#define GLS_API __declspec(dllexport)
 	#else
-		#define GLS_API 
-	#endif 
+		#define GLS_API
+	#endif
 	#else
 	#if defined(_MSC_VER)
 		#define GLS_API __declspec(dllimport)
 	#else
-		#define GLS_API 
-	#endif 
+		#define GLS_API
+	#endif
 #endif
 
 
@@ -121,7 +125,7 @@ struct device_login
 	private:
 		static __gps__* self;
 		otl_connect* db;
-		const char dir_path[6] = { "./gps" };
+		const char* dir_path = { "./gps" };
 		zmq::socket_t* publisher;
 		zmq::context_t* context;
 		std::shared_ptr<std::vector<gps*>> vgpses;
@@ -144,7 +148,7 @@ struct device_login
 
 
 		web::http::client::http_client_config client_config_for_proxy();
-		
+
 		//Accessors
 		std::string get_document_db_username();
 		std::string get_document_db_userpassword();
@@ -152,9 +156,14 @@ struct device_login
 		std::string get_document_db_database_name();
 		int get_document_db_database_port();
 
-		std::wstring basic_auth_data;
-		std::wstring get_basic_auth_data();
-	};
+		#if defined(_MSC_VER)
+			std::wstring basic_auth_data;
+			std::wstring get_basic_auth_data();
+		#else
+			std::string basic_auth_data;
+			std::string get_basic_auth_data();
+		#endif
+ };
 
 	//Typedefs...
 	typedef class __gps__ GPS_HANDLERS, *LPGPS_HANDLERS;

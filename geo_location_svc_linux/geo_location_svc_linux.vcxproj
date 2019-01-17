@@ -92,7 +92,6 @@
   <ItemGroup>
     <ClCompile Include="..\geo_location\geo_location_svc.cpp" />
     <ClCompile Include="..\geo_location\main.cpp" />
-    <ClCompile Include="..\sdk\NanoLog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\geo_location\geo_location_svc.h" />
@@ -110,11 +109,21 @@
     <ClInclude Include="..\sdk\zmq.hpp" />
     <ClInclude Include="..\sdk\zmq_utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\geo_location_svc_lib_linux\geo_location_svc_lib_linux.vcxproj">
+      <Project>{fb876468-f8a6-4110-8a1c-0baf5c9c0f3d}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\config\application.properties">
+      <RemoteCopyFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</RemoteCopyFile>
+    </None>
+  </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <LibraryDependencies>zmq;odbc;odbccr;pthread;dl;boost_system</LibraryDependencies>
+      <LibraryDependencies>geo_location_svc_lib_linux;cpprest;ssl;crypto;zmq;odbc;odbccr;pthread;dl;boost_system</LibraryDependencies>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

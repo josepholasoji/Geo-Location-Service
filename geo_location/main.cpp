@@ -1,4 +1,6 @@
-#include "../sdk/stdafx.h"
+#if defined(_MSC_VER)
+	#include "../sdk/stdafx.h"
+#endif
 #include "server.h"
 
 #include <boost/asio.hpp>
