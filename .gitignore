@@ -1,3 +1,4 @@
+*.gps
 *.db
 *.pch
 *.ipch
