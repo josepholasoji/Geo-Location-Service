@@ -20,6 +20,8 @@ ipch
 Debug/**
 Release/**
 ipch/**
+bin/**
+testbin/**
 geo_location/Debug/**
 geo_location/Release/**
 tk103/Debug/**
