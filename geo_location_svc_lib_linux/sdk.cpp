@@ -204,14 +204,16 @@ namespace geolocation_svc {
 
 
 			//connect the subscriber
+			std::stringstream bind_fmt;
+			bind_fmt << "tcp://" << __gps__::self->message_queue_host << ":" << __gps__::self->message_queue_port;
 			zmq::socket_t* subscriber = new zmq::socket_t(*zmq_context, ZMQ_SUB);
 			subscriber->setsockopt(ZMQ_LINGER, 0);
-			subscriber->connect("tcp://localhost:5555");
+			subscriber->connect(bind_fmt.str());
 
 			//add subscribtion filter for feeback messages only
 			const char *filter = "";
 			subscriber->setsockopt(ZMQ_SUBSCRIBE, filter, strlen(filter));
-			LOG_WARN << "Device feedback logger queue started on port: 5555";
+			LOG_WARN << "Device feedback logger queue started on" << __gps__::self->message_queue_host << ":" << __gps__::self->message_queue_port;
 
 			while (true)
 			{
@@ -230,15 +232,14 @@ namespace geolocation_svc {
 				std::stringstream URL_fmt;
 				URL_fmt << "http://" << __gps__::self->get_document_db_host() << ":" << __gps__::self->get_document_db_database_port() << "/_db/" << __gps__::self->get_document_db_database_name() << "/_api/document/logs";
 
-				http_client client(utility::conversions::to_string_t(URL_fmt.str()));
+				std::string url = URL_fmt.str();
+				http_client client(utility::conversions::to_string_t(url));
 				http_request request(methods::POST);
 				request.headers().add("Content-type", "application/json");
 				request.headers().add("Authorization", __gps__::self->get_basic_auth_data());
 				request.set_body(str);
-
-				auto response = client.request(request)
-					.then([str](http_response response) {
-					if (response.status_code() != status_codes::Accepted && response.status_code() != status_codes::Created) {
+				client.request(request).then([str](http_response response) {
+					if ((response.status_code() != status_codes::Accepted) && (response.status_code() != status_codes::Created)) {
 						__gps__::self->log_feedback(str);
 					}
 				});

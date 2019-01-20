@@ -33,7 +33,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\testbin\tk103_tests</OutDir>
+    <OutDir>$(SolutionDir)bin\tests\tk103_tests</OutDir>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="modelutil.h" />

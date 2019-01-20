@@ -197,14 +197,16 @@ namespace geolocation_svc {
 
 
 			//connect the subscriber
+			std::stringstream bind_fmt;
+			bind_fmt << "tcp://" << __gps__::self->message_queue_host << ":" << __gps__::self->message_queue_port;
 			zmq::socket_t* subscriber = new zmq::socket_t(*zmq_context, ZMQ_SUB);
 			subscriber->setsockopt(ZMQ_LINGER, 0);
-			subscriber->connect("tcp://localhost:5555");
+			subscriber->connect(bind_fmt.str());
 
 			//add subscribtion filter for feeback messages only
 			const char *filter = "";
 			subscriber->setsockopt(ZMQ_SUBSCRIBE, filter, strlen(filter));
-			LOG_WARN << "Device feedback logger queue started on port: 5555";
+			LOG_WARN << "Device feedback logger queue started on" << __gps__::self->message_queue_host << ":" << __gps__::self->message_queue_port;
 
 			while (true)
 			{

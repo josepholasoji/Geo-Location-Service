@@ -1,6 +1,0 @@
-[2018-12-16 01:49:46.149304][WARN][140660105848960][/root/projects/geo_location_svc_linux/geo_location/main.cpp:main:91] [unixODBC][Driver Manager]Can't open lib 'MySQL ODBC 8.0 ANSI Driver' : file not found
-[2018-12-16 01:49:46.149309][WARN][140660105848960][/root/projects/geo_location_svc_linux/geo_location/main.cpp:main:92] 0
-[2018-12-16 01:49:46.149311][WARN][140660105848960][/root/projects/geo_location_svc_linux/geo_location/main.cpp:main:93] 
-[2018-12-16 01:49:46.149313][WARN][140660105848960][/root/projects/geo_location_svc_linux/geo_location/main.cpp:main:94] 01000
-[2018-12-16 01:49:46.149315][WARN][140660105848960][/root/projects/geo_location_svc_linux/geo_location/main.cpp:main:95] 
-[2018-12-16 01:49:46.149340][WARN][140660105848960][/root/projects/geo_location_svc_linux/geo_location/main.cpp:main:107] Searching for GPS files...
