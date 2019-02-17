@@ -253,9 +253,8 @@ namespace geolocation_svc {
 		request.headers().add("Accept", "application/json");
 		request.headers().add("Authorization", this->get_basic_auth_data());
 		
-		auto response = client.request(request);
-		auto status_code = response.get().status_code();
-		return status_code == status_codes::OK ? true : false;
+		auto response_status_code = client.request(request).get().status_code();
+		return response_status_code == status_codes::OK;
 	}
 
 	/*

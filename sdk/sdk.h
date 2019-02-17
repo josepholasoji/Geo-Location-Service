@@ -15,6 +15,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/thread.hpp>
 
+#include "Utils.h"
 #include "../include/cpprest/filestream.h"
 #include "../include/cpprest/http_client.h"
 
@@ -116,7 +117,7 @@ struct device_login
 		GLS_API __gps__();
 		virtual void log_feedback(device_feedback* device_feeback);
 		virtual void log_feedback(std::string device_feeback_str);
-		virtual bool is_device_registered(const char* deviceId);
+		virtual const char*  is_device_registered(const char* deviceId);
 
 		GLS_API std::shared_ptr<std::vector<gps*>> search_gps_device_drivers();
 		GLS_API void start_device_feedbacks_logs_job();
@@ -155,7 +156,7 @@ struct device_login
 		std::string get_document_db_host();
 		std::string get_document_db_database_name();
 		int get_document_db_database_port();
-
+	
 		#if defined(_MSC_VER)
 			std::wstring basic_auth_data;
 			std::wstring get_basic_auth_data();

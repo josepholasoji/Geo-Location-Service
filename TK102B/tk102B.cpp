@@ -4,7 +4,7 @@
 	#include "../sdk/stdafx.h"
 #endif
 
-#include "tk103.h"
+#include "tk102B.h"
 #include "../sdk/data_payload_from_device.h"
 #include "../sdk/data_downstream.h"
 #include <thread>
@@ -14,19 +14,19 @@
 
 
 // This is an example of an exported function.
-TK103_API gps* load(geolocation_svc::LPGPS_HANDLERS handlers)
+TK102B_API gps* load(geolocation_svc::LPGPS_HANDLERS handlers)
 {
-	gps* _gps = new Ctk103(handlers);
+	gps* _gps = new Ctk102B(handlers);
 	return _gps;
 }
 
 
 // This is the constructor of a class that has been exported.
 // see tk103.h for the class definition
-Ctk103::Ctk103(geolocation_svc::LPGPS_HANDLERS _handlers)
+Ctk102B::Ctk102B(geolocation_svc::LPGPS_HANDLERS _handlers)
 {
 	this->handlers = _handlers;
-	this->port = 2773;
+	this->port = 2772;
 
 	device_command_message = {
 		{ "AP00" ,{ "AP00","One time calling message 3.1.5","Device parameter message",_command_message_enum::AP00 } },
@@ -94,11 +94,11 @@ Ctk103::Ctk103(geolocation_svc::LPGPS_HANDLERS _handlers)
 	//zmq_in_socket_handle = zmq_socket(zmq_context, ZMQ_SUB);
 	//zmq_bind(zmq_in_socket_handle, "tcp://*:5555");
 
-	_gps_service.set_gps(this);
+	_gps_service.set_handlers(this->handlers);
 	return;
 }
 
-const char* Ctk103::process(const char *data, int size)
+const char* Ctk102B::process(const char *data, int size)
 {
 	data_payload_from_device* deviceData = nullptr;
 
@@ -241,40 +241,40 @@ const char* Ctk103::process(const char *data, int size)
 	return "";
 }
 
-Ctk103::~Ctk103()
+Ctk102B::~Ctk102B()
 {
 }
 
-std::map<const char*, const char*> Ctk103::config()
+void Ctk102B::config(const char* key, const char* value)
 {
-	return this->_config;
+	this->config(key, value);
 }
 
-gps * Ctk103::detect(char *, int)
+gps * Ctk102B::detect(char *, int)
 {
 	return nullptr;
 }
 
-short int Ctk103::serverPort()
+short int Ctk102B::serverPort()
 {
 	return this->port;
 }
 
-const char* Ctk103::deviceName()
+const char* Ctk102B::deviceName()
 {
-	return "TK103";
+	return "TK102B";
 }
 
-const char* Ctk103::deviceId()
+const char* Ctk102B::deviceId()
 {
 	return this->_gps_service.deviceId.c_str();
 }
 
-TK103_API std::map<std::string, struct _command_message > Ctk103::deviceCommandMessage() {
+TK102B_API std::map<std::string, struct _command_message > Ctk102B::deviceCommandMessage() {
 	return this->device_command_message;
 }
 
-void Ctk103::start()
+void Ctk102B::start()
 {
 	started = true;
 
@@ -288,51 +288,31 @@ void Ctk103::start()
 }
 
 
-void Ctk103::stop()
+void Ctk102B::stop()
 {
 	started = false;
 }
 
-void Ctk103::status()
+void Ctk102B::status()
 {
 
 }
 
-unsigned char* Ctk103::read()
+unsigned char* Ctk102B::read()
 {
-	//zmq_msg_t msg;
-	//int rc = zmq_msg_init(&msg);
-
-	//assert(rc == 0);
-	//rc = zmq_recvmsg(zmq_in_socket_handle, &msg, 0);
-
-	//std::shared_ptr<data_downstream> ds = std::make_shared<data_downstream>();
-	//memcpy(&ds, zmq_msg_data(&msg), zmq_msg_size(&msg));
-
-	//assert(rc == 0);
-	//zmq_msg_close(&msg);
 	return 0;
 }
 
-int Ctk103::write(unsigned char* ch, int size)
+int Ctk102B::write(unsigned char* ch, int size)
 {
-	//zmq_msg_t msg;
-	//int rc = zmq_msg_init_size(&msg, size);
-	//assert(rc == 0);
-	//memcpy(zmq_msg_data(&msg), ch, size);
-	//rc = zmq_sendmsg(zmq_out_socket_handle, &msg, 0);
 	return 0;
 }
 
-TK103_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk103::parseDeviceRequest(const char* ch)
+TK102B_API  std::tuple<data_payload_from_device*, struct _command_message> Ctk102B::parseDeviceRequest(const char* ch)
 {
 	data_payload_from_device* in_data = (data_payload_from_device *)(ch);
 	struct _command_message msg = this->device_command_message[std::string(in_data->_LOGIN_MESSAGE.command, sizeof(in_data->_LOGIN_MESSAGE.command))];
 
 	return std::tuple<data_payload_from_device*, struct _command_message>(in_data, msg);
-}
-
-geolocation_svc::LPGPS_HANDLERS Ctk103::get_handler() {
-	return this->handlers;
 }
 

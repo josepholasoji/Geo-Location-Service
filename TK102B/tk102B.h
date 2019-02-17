@@ -1,6 +1,6 @@
 ﻿#pragma once
 #ifndef TK103_EXPORTS
-	#define TK103_EXPORTS
+	#define TK102B_EXPORTS
 #endif // !TK103_EXPORTS
 
 // The following ifdef block is the standard way of creating macros which make exporting 
@@ -9,18 +9,10 @@
 // that uses this DLL. This way any other project whose source files include this file see 
 // TK103_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
-#ifdef TK103_EXPORTS
-	#if defined(_MSC_VER)
-		#define TK103_API __declspec(dllexport)
-	#else
-		#define TK103_API 
-	#endif // defined(WINDOW) && (_MSC_VER)
+#ifdef TK102B_EXPORTS
+		#define TK102B_API 
 #else
-	#if defined(_MSC_VER)
-		#define TK103_API __declspec(dllimport)
-	#else
-		#define TK103_API 
-	#endif // defined(WINDOW) && (_MSC_VER)
+		#define TK102B_API 
 #endif
 
 #include <string>
@@ -265,11 +257,11 @@ struct _command_message
 
 extern "C"
 {
-	TK103_API  gps* load(geolocation_svc::LPGPS_HANDLERS);
+	TK102B_API  gps* load(geolocation_svc::LPGPS_HANDLERS);
 }
 
 // This class is exported from the tk103.dll
-class Ctk103: public gps {
+class Ctk102B: public gps {
 	int istatus, port;
 	bool started = false;
 	std::map<std::string, struct _command_message > device_command_message;
@@ -277,27 +269,28 @@ class Ctk103: public gps {
 	gps_service _gps_service;
 
 	geolocation_svc::LPGPS_HANDLERS handlers;
-	std::map<const char*, const char*> _config;
+
 	void *zmq_context;
 	void *zmq_in_socket_handle, *zmq_out_socket_handle;
 
+	std::map<char*, char*> config;
+
 public:
 
-	Ctk103(geolocation_svc::LPGPS_HANDLERS);
-	~ Ctk103();
+	Ctk102B(geolocation_svc::LPGPS_HANDLERS);
+	~ Ctk102B();
 
 	//
 	unsigned char* read();
 	int write(unsigned char* ch, int size);
-	TK103_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(const char* ch);
-	TK103_API std::map<std::string, struct _command_message > deviceCommandMessage();
+	TK102B_API std::tuple<data_payload_from_device*, struct _command_message> parseDeviceRequest(const char* ch);
+	TK102B_API std::map<std::string, struct _command_message > deviceCommandMessage();
 
 	// Inherited via gps
 	virtual void start() override;
 	virtual void stop() override;
 	virtual void status() override;
-	virtual std::map<const char*, const char*> config() override;
-	virtual geolocation_svc::LPGPS_HANDLERS get_handler() override;
+	virtual void config(const char*, const char*) override;
 
 	// Inherited via gps
 	virtual gps * detect(char *, int) override;
@@ -310,5 +303,5 @@ public:
 	virtual const char* deviceName() override;
 };
 
-extern TK103_API int ntk103;
+extern TK102B_API int ntk103;
 

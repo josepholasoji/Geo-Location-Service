@@ -174,7 +174,84 @@ namespace geolocation_svc {
 					return gpses;
 				}
 
-				gpses->push_back(load(this));
+				std::stringstream gps_config_file;
+				gps_config_file << "config/application." << file.cFileName << ".properties";
+				if (Utils::file_exists(gps_config_file.str())) {
+					
+					auto gps = load(this);
+
+					YAML::Node config = YAML::LoadFile(gps_config_file.str());
+
+					std::stringstream gps_config;
+					gps_config << "service.configure.device.port";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+					else {
+						LOG_WARN << "Error! no service port defined for " << gps->deviceName() << "! device will be skipped from startup.";
+						break;
+					}
+
+					std::stringstream gps_config;
+					gps_config << "service.configure.admin.port";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.messageIdIsDeviceId";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.feedback.isochronousMessageInterval";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.feedback.isometryMessageInterval";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.tracking.upperSpeedLimit";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.tracking.lowerSpeedLimit";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.apn";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.onekey";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gps_config.clear();
+					gps_config << "service.configure.device.pushAlarmtopic";
+					if (config[gps_config.str()].IsDefined) {
+						gps->config(gps_config.str().c_str(), config[gps_config.str()].as<std::string>().c_str());
+					}
+
+					gpses->push_back(gps);
+				}
+				else {
+					LOG_WARN << "Error! no config file found for " << gps->deviceName() << "! device will be skipped from startup.";
+				}
+
 			} while (FindNextFile(search_handle, &file));
 			FindClose(search_handle);
 		}
@@ -241,15 +318,19 @@ namespace geolocation_svc {
 		}, 1024, (void*)log_params);
 	}
 
-	bool __gps__::is_device_registered(const char* deviceId) {
+	const char* __gps__::is_device_registered(const char* deviceId) {
 		http_client client(web::uri(utility::conversions::to_string_t( std::string(std::string("http://127.0.0.1:8529/_db/geo_location/_api/document/devices/") + std::string(deviceId)) )));
 		http_request request(methods::GET);
 		request.headers().add(L"Accept", L"application/json");
 		request.headers().add(L"Authorization", this->get_basic_auth_data());
 		
-		auto response = client.request(request);
-		auto status_code = response.get().status_code();
-		return status_code == status_codes::OK ? true : false;
+		auto response = client.request(request).get();
+		if (response.status_code() == status_codes::OK) {
+			std::string device_configuration_details = response.extract_utf8string().get();
+			return device_configuration_details.c_str();//Return the device configuration details
+		}
+
+		return NULL;
 	}
 
 	/*

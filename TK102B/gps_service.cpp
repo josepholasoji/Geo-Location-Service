@@ -10,14 +10,11 @@ using namespace geolocation_svc;
 gps_service::gps_service()
 {
 	deviceId = std::string("000000000");
-	this->gps->get_handler() = nullptr;
+	this->handlers = nullptr;
 }
 
 
-gps_service::~gps_service()
-{
- 
-}
+gps_service::~gps_service() {}
 
 const char* gps_service::deviceLogin(data_payload_from_device*  deviceData)
 {
@@ -28,48 +25,20 @@ const char* gps_service::deviceLogin(data_payload_from_device*  deviceData)
 	std::string deviceId(deviceData->_LOGIN_MESSAGE.device_id, sizeof(deviceData->_LOGIN_MESSAGE.device_id));
 
 	//Get list of configured devices...
-	auto device_configuration = this->gps->get_handler()->is_device_registered(deviceId.c_str());
-	if (NULL != device_configuration)
-	{
-		std::map<const char*, const char*> config = this->gps->config();
-		std::istringstream iss(device_configuration);
-		boost::property_tree::ptree in;
-		auto read_json_obj = boost::property_tree::read_json(iss, in);
-		for (std::pair<const char*, const char*> entry : read_json_obj) {			
-			if (config.find(entry.first) == std::end()) {
-				config.insert(entry.first, entry.second);
-			}
-			else {
-				config[entry.first] = entry.second;
-			}
-		}
+	bool isAKnownDevice = this->handlers->is_device_registered(deviceId.c_str());
+	if (!isAKnownDevice) return "*";
 
-		if (config.find("service.configure.device.messageIdIsDeviceId") != std::end()) {
-			std::string messageIdIsDeviceId = config["service.configure.device.messageIdIsDeviceId"];
-			boost::iequals(messageIdIsDeviceId, "true") ? this->deviceId = id : this->deviceId = deviceId;
-		}
-		else {
-			this->deviceId = deviceId;
-		}
-		
-		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
-#if defined(_MSC_VER)
-		strcpy_s(output, 1024, o.c_str());
-#else
-		strcpy(output, o.c_str());
-#endif // defined(WINDOW) && (_MSC_VER)
-		return output;
-	}
-	else
-	{
-		return "*";
-	}
-
+	this->deviceId = deviceId;
+	std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP05", nullptr));
+	strcpy(output, o.c_str());
+	return output;
 }
 
 const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 {
-	if (this->deviceId.compare("000000000") == 0) return "";
+	//Get list of configured devices...
+	bool isAKnownDevice = this->handlers->is_device_registered(this->deviceId.c_str());
+	if (!isAKnownDevice) return "";
 
 	std::string dataAvailable = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.dataAvailable);
 	if (dataAvailable.compare("A") == 0) {
@@ -97,7 +66,7 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 
 		std::string orientation = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.orientation);
 		double dorientation = std::stod(orientation);
-		
+
 		std::string IOState = GPScharsToString(deviceData->_ISOCHRONOUS_FOR_CONTINUES_FEEDBACK_MESSAGE.gps_data.IOState);
 		bool main_power_switch_on = IOState[0] == '0' ? true : false;
 		bool acc_ignition_on = IOState[1] == '1' ? true : false;
@@ -115,13 +84,10 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 		std::istringstream iss(_s);
 		iss >> std::hex >> dmile_data;
 
-		device_feedback *feedback = (device_feedback *) malloc(sizeof(device_feedback));
+		device_feedback *feedback = (device_feedback *)malloc(sizeof(device_feedback));
 		feedback->acc_ignition_on = acc_ignition_on;
-#if defined(_MSC_VER)
-		strcpy_s(feedback->deviceId, this->deviceId.c_str());
-#else
+
 		strcpy(feedback->deviceId, this->deviceId.c_str());
-#endif // defined(WINDOW) && (_MSC_VER)
 
 		feedback->dlat = std::floor((dlat * 100000) + .5) / 100000;
 		feedback->dlon = std::floor((dlon * 100000) + .5) / 100000;
@@ -141,7 +107,7 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 
 		feedback->_dateTime = __datetime;
 
-		this->gps->get_handler()->log_feedback(feedback);
+		this->handlers->log_feedback(feedback);
 		free((void*)feedback->_dateTime);
 		free((void*)feedback);
 	}
@@ -151,7 +117,9 @@ const char* gps_service::deviceFeedback(data_payload_from_device*  deviceData)
 
 const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceData)
 {
-	if (this->deviceId.compare("000000000") == 0) return "";
+	//Get list of configured devices...
+	bool isAKnownDevice = this->handlers->is_device_registered(this->deviceId.c_str());
+	if (!isAKnownDevice) return "";
 
 	std::string dataAvailable = GPScharsToString(deviceData->_CONTINUES_FEEDBACK_ENDING_MESSAGE.gps_data.dataAvailable);
 	if (dataAvailable.compare("A") == 0) {
@@ -199,11 +167,8 @@ const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 
 		device_feedback *feedback = (device_feedback *)malloc(sizeof(device_feedback));
 		feedback->acc_ignition_on = acc_ignition_on;
-#if defined(_MSC_VER)
-		strcpy_s(feedback->deviceId, this->deviceId.c_str());
-#else
+
 		strcpy(feedback->deviceId, this->deviceId.c_str());
-#endif // defined(WINDOW) && (_MSC_VER)
 		feedback->dlat = std::floor((dlat * 100000) + .5) / 100000;
 		feedback->dlon = std::floor((dlon * 100000) + .5) / 100000;
 		feedback->dmile_data = dmile_data;
@@ -222,7 +187,7 @@ const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 
 		feedback->_dateTime = __datetime;
 
-		this->gps->get_handler()->log_feedback(feedback);
+		this->handlers->log_feedback(feedback);
 		free((void*)feedback->_dateTime);
 		free((void*)feedback);
 	}
@@ -230,74 +195,27 @@ const char* gps_service::deviceFeedbackEnding(data_payload_from_device*  deviceD
 	return "";
 }
 
-const std::string gps_service::configure_device()
-{
-	std::string msg;
-
-	std::map<const char*, const char*> config = this->gps->config();
-	if (config.find("service.configure.device.feedback.isochronousMessageInterval") != std::end()) {
-	}
-
-	if (config.find("service.configure.device.feedback.isometryMessageInterval") != std::end()) {
-	}
-
-	if (config.find("service.configure.device.tracking.upperSpeedLimit") != std::end()) {
-	}
-
-	if (config.find("service.configure.device.tracking.lowerSpeedLimit") != std::end()) {
-	}
-
-	if (config.find("service.configure.device.apn") != std::end()) {
-	}
-
-	if (config.find("service.configure.device.onekey") != std::end()) {
-	}
-}
-
 const char* gps_service::deviceHandshake(data_payload_from_device*  deviceData)
 {
-		char * output = (char*) malloc(1024);
+	char * output = (char*)malloc(1024);
 	memset((void*)output, 0, 1024);
 
 	std::string id(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.id, sizeof(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.id));
 	std::string deviceId(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.device_id, sizeof(deviceData->_HANDSHAKE_SIGNAL_MESSAGE.device_id));
 
+	boost::trim(id);
+	boost::trim(deviceId);
 	//Get list of configured devices...
-	auto device_configuration = this->gps->get_handler()->is_device_registered(deviceId.c_str());
+	bool isAKnownDevice = this->handlers->is_device_registered(id.c_str());
 
 	//
-	if (NULL != device_configuration)
+	if (isAKnownDevice)
 	{
-		//Update configuration...
-		std::map<const char*, const char*> config = this->gps->config();
-		std::istringstream iss(device_configuration);
-		boost::property_tree::ptree in;
-		auto read_json_obj = boost::property_tree::read_json(iss, in);
-		for (std::pair<const char*, const char*> entry : read_json_obj) {			
-			if (config.find(entry.first) == std::end()) {
-				config.insert(entry.first, entry.second);
-			}
-			else {
-				config[entry.first] = entry.second;
-			}
-		}
-
-		if (config.find("service.configure.device.messageIdIsDeviceId") != std::end()) {
-			std::string messageIdIsDeviceId = config["service.configure.device.messageIdIsDeviceId"];			
-			boost::iequals(messageIdIsDeviceId, "true") ? this->deviceId = id : this->deviceId = deviceId;
-		}
-		else {
-			this->deviceId = deviceId;
-		}
-
+		//For TK102 - clones has the deviceid as the message id
+		this->deviceId = id;
 		std::string o = std::move(Utils::formDeviceResponse(id.c_str(), "AP01", "HSO"));
-#if defined(_MSC_VER)
-		strcpy_s(output, 1024, o.c_str());
-#else
 		strcpy(output, o.c_str());
-#endif // defined(WINDOW) && (_MSC_VER)
-
-		return output + configure_device();
+		return output;
 	}
 	else
 	{
@@ -305,8 +223,8 @@ const char* gps_service::deviceHandshake(data_payload_from_device*  deviceData)
 	}
 }
 
-void gps_service::set_gps(LPGPS gps)
+void gps_service::set_handlers(LPGPS_HANDLERS handlers)
 {
-	this->gps = gps;
+	this->handlers = handlers;
 }
 
